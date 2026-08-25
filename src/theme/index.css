@@ -21,12 +21,21 @@
   --color-muted: #f4f4f5;
   --color-muted-foreground: #71717a;
 
-  --color-border: #e4e4e7;
+  --color-border: #DADADA;
   --color-input: #e4e4e7;
   --color-ring: #3b82f6;
 
-  --font-display: "System";
-  --font-body: "System";
+  --color-text-primary: #000000;
+  --color-text-secondary: #52525b;
+  --color-text-tertiary: #71717a;
+  --color-text-inverse: #FFFFFF;
+  --color-text-accent: #005C6E;
+  --color-text-error: #FF1717;
+  --color-text-success: #00A419;
+  --color-text-warning: #A16207;
+
+  --font-display: "Poppins-Bold";
+  --font-body: "Poppins-Regular";
 
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
