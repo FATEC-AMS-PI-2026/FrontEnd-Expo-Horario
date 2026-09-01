@@ -1,0 +1,129 @@
+---
+sidebar_position: 8
+---
+
+# Accordion
+
+Seções expansíveis com animação de abertura/fechamento.
+
+## Importação
+
+```tsx
+import { Accordion, AccordionItem } from "../components";
+```
+
+## Básico
+
+```tsx
+<Accordion>
+  <AccordionItem title="Pergunta 1">
+    <Text>Resposta 1</Text>
+  </AccordionItem>
+  <AccordionItem title="Pergunta 2">
+    <Text>Resposta 2</Text>
+  </AccordionItem>
+</Accordion>
+```
+
+---
+
+## Animação
+
+Usa `react-native-reanimated` para:
+
+- **Height**: Anima de 0 para altura real
+- **Opacity**: Fade in/out
+- **Chevron**: Rotaciona 90° com spring
+- **Spring**: damping 20, stiffness 300
+
+---
+
+## Props
+
+### Accordion
+
+| Prop | Tipo | Default | Descrição |
+|------|------|---------|-----------|
+| `children` | `ReactNode` | - | Itens do accordion |
+| `className` | `string` | - | Classes adicionais |
+
+### AccordionItem
+
+| Prop | Tipo | Default | Descrição |
+|------|------|---------|-----------|
+| `title` | `string` | - | Título clicável |
+| `children` | `ReactNode` | - | Conteúdo expansível |
+| `defaultOpen` | `boolean` | `false` | Aberto por padrão |
+| `className` | `string` | - | Classes adicionais |
+
+---
+
+## Exemplos
+
+### FAQ
+
+```tsx
+<Accordion>
+  <AccordionItem title="O que é React Native?">
+    <Text variant="body">
+      React Native é um framework que permite criar apps nativos
+      usando React e JavaScript.
+    </Text>
+  </AccordionItem>
+  <AccordionItem title="O que é Expo?" defaultOpen>
+    <Text variant="body">
+      Expo é um conjunto de ferramentas que facilita o
+      desenvolvimento com React Native.
+    </Text>
+  </AccordionItem>
+  <AccordionItem title="O que é NativeWind?">
+    <Text variant="body">
+      NativeWind permite usar classes do Tailwind CSS em React Native.
+    </Text>
+  </AccordionItem>
+</Accordion>
+```
+
+### Accordion com um item aberto
+
+```tsx
+const [openItem, setOpenItem] = useState("item1");
+
+<Accordion>
+  <AccordionItem title="Seção 1">
+    <Text>Conteúdo 1</Text>
+  </AccordionItem>
+  <AccordionItem title="Seção 2" defaultOpen>
+    <Text>Conteúdo 2 (aberto por padrão)</Text>
+  </AccordionItem>
+  <AccordionItem title="Seção 3">
+    <Text>Conteúdo 3</Text>
+  </AccordionItem>
+</Accordion>
+```
+
+### Accordion em configurações
+
+```tsx
+<Card>
+  <CardHeader>
+    <Text variant="subheading">Configurações Avançadas</Text>
+  </CardHeader>
+  <CardContent>
+    <Accordion>
+      <AccordionItem title="Notificações">
+        <View className="gap-3">
+          <Switch label="Email" value={true} onValueChange={() => {}} />
+          <Switch label="Push" value={false} onValueChange={() => {}} />
+        </View>
+      </AccordionItem>
+      <AccordionItem title="Privacidade">
+        <View className="gap-3">
+          <Switch label="Perfil público" value={true} onValueChange={() => {}} />
+          <Switch label="Mostrar email" value={false} onValueChange={() => {}} />
+        </View>
+      </AccordionItem>
+    </Accordion>
+  </CardContent>
+</Card>
+```

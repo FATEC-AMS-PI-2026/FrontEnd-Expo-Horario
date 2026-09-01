@@ -1,0 +1,198 @@
+---
+sidebar_position: 1
+---
+
+# Cores
+
+Paleta de cores do design system, definida em `src/theme/index.css`.
+
+## Primary
+
+Cor principal da marca.
+
+<div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#005C6E' }} />
+    <code>--color-primary</code><br />
+    <small>#005C6E</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#005C6E' }} />
+    <code>--color-primary-light</code><br />
+    <small>#005C6E</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#004D5C' }} />
+    <code>--color-primary-dark</code><br />
+    <small>#004D5C</small>
+  </div>
+</div>
+
+| Token | Valor | Uso |
+|-------|-------|-----|
+| `--color-primary` | `#005C6E` | Botões, links, elementos de destaque |
+| `--color-primary-light` | `#005C6E` | Variações claras |
+| `--color-primary-dark` | `#004D5C` | Estados hover, ênfase |
+
+```tsx
+<Button variant="primary">Primary</Button>
+```
+
+---
+
+## Secondary
+
+Cor secundária para elementos complementares.
+
+<div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#8b5cf6' }} />
+    <code>--color-secondary</code><br />
+    <small>#8b5cf6</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#c4b5fd' }} />
+    <code>--color-secondary-light</code><br />
+    <small>#c4b5fd</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#6d28d9' }} />
+    <code>--color-secondary-dark</code><br />
+    <small>#6d28d9</small>
+  </div>
+</div>
+
+| Token | Valor | Uso |
+|-------|-------|-----|
+| `--color-secondary` | `#8b5cf6` | Ações secundárias |
+| `--color-secondary-light` | `#c4b5fd` | Backgrounds sutis |
+| `--color-secondary-dark` | `#6d28d9` | Hover states |
+
+---
+
+## Accent
+
+Cor de destaque para elementos interativos.
+
+<div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#06b6d4' }} />
+    <code>--color-accent</code><br />
+    <small>#06b6d4</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#67e8f9' }} />
+    <code>--color-accent-light</code><br />
+    <small>#67e8f9</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#0891b2' }} />
+    <code>--color-accent-dark</code><br />
+    <small>#0891b2</small>
+  </div>
+</div>
+
+---
+
+## Feedback
+
+Cores de status e feedback.
+
+<div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#00A419' }} />
+    <code>--color-success</code><br />
+    <small>#00A419</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#FFF266' }} />
+    <code>--color-warning</code><br />
+    <small>#FFF266</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#FF1717' }} />
+    <code>--color-error</code><br />
+    <small>#FF1717</small>
+  </div>
+</div>
+
+| Token | Valor | Uso |
+|-------|-------|-----|
+| `--color-success` | `#00A419` | Confirmações, ações bem-sucedidas |
+| `--color-warning` | `#FFF266` | Avisos, atenção |
+| `--color-error` | `#FF1717` | Erros, ações destrutivas |
+
+```tsx
+<Badge variant="success">Sucesso</Badge>
+<Badge variant="warning">Aviso</Badge>
+<Badge variant="error">Erro</Badge>
+```
+
+---
+
+## Neutros
+
+Cores de fundo, bordas e texto.
+
+<div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#FFFFFF', border: '1px solid #e4e4e7' }} />
+    <code>--color-background</code><br />
+    <small>#FFFFFF</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#DADADA' }} />
+    <code>--color-foreground</code><br />
+    <small>#DADADA</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#f4f4f5' }} />
+    <code>--color-muted</code><br />
+    <small>#f4f4f5</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#71717a' }} />
+    <code>--color-muted-foreground</code><br />
+    <small>#71717a</small>
+  </div>
+</div>
+
+---
+
+## Texto
+
+Cores de texto para diferentes contextos.
+
+<div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#000000' }} />
+    <code>--color-text-primary</code><br />
+    <small>#000000</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#52525b' }} />
+    <code>--color-text-secondary</code><br />
+    <small>#52525b</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#71717a' }} />
+    <code>--color-text-tertiary</code><br />
+    <small>#71717a</small>
+  </div>
+  <div style={{ textAlign: 'center' }}>
+    <div style={{ width: 80, height: 80, borderRadius: 8, backgroundColor: '#FFFFFF', border: '1px solid #e4e4e7' }} />
+    <code>--color-text-inverse</code><br />
+    <small>#FFFFFF</small>
+  </div>
+</div>
+
+| Token | Classe NativeWind | Uso |
+|-------|-------------------|-----|
+| `--color-text-primary` | `text-text-primary` | Títulos, texto principal |
+| `--color-text-secondary` | `text-text-secondary` | Corpo de texto |
+| `--color-text-tertiary` | `text-text-tertiary` | Legendas, captions |
+| `--color-text-inverse` | `text-text-inverse` | Texto sobre fundo escuro |
+| `--color-text-accent` | `text-text-accent` | Links, destaques |
+| `--color-text-error` | `text-text-error` | Mensagens de erro |
+| `--color-text-success` | `text-text-success` | Confirmações |
+| `--color-text-warning` | `text-text-warning` | Avisos |
