@@ -1,4 +1,4 @@
-﻿import { useFonts } from "expo-font";
+import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -23,10 +23,17 @@ export default function RootLayout() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="welcomeScreen" options={{ title: "Boas Vindas" }} />
+      <Stack.Screen 
+        name="welcomeScreen" 
+        options={{ title: "Boas Vindas" }} 
+      />
       <Stack.Screen
         name="periodSelectionScreen"
         options={{ title: "Escolha seu período" }}
+      />
+      <Stack.Screen 
+        name="chooseCurse" 
+        options={{ title: "Escolha seu curso" }}
       />
     </Stack>
   );
