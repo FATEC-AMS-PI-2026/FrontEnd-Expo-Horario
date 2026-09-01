@@ -1,0 +1,49 @@
+---
+sidebar_position: 1
+---
+
+# Início
+
+O **FrontEnd Expo** é um design system construído com [Expo](https://docs.expo.dev), [NativeWind](https://www.nativewind.dev) e [React Native](https://reactnative.dev).
+
+## Stack
+
+| Tecnologia | Versão | Uso |
+|------------|--------|-----|
+| Expo | 57 | Framework principal |
+| React Native | 0.86 | Componentes nativos |
+| NativeWind | 5.x | Estilização com Tailwind |
+| TypeScript | 6.x | Tipagem estática |
+| Reanimated | 4.x | Animações |
+
+## Instalação
+
+```bash
+npx create-expo-app@latest meu-app
+cd meu-app
+npm install nativewind tailwindcss
+```
+
+## Estrutura
+
+```
+src/
+  components/     # Componentes reutilizáveis
+  app/            # Rotas (Expo Router)
+  theme/          # Design tokens (CSS)
+```
+
+## Uso Rápido
+
+```tsx
+import { Button, Card, Input } from "../components";
+
+export default function Tela() {
+  return (
+    <Card>
+      <Input label="Email" placeholder="email@exemplo.com" />
+      <Button variant="primary">Enviar</Button>
+    </Card>
+  );
+}
+```
