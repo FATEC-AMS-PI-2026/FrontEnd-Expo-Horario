@@ -23,8 +23,18 @@ export default function RootLayout() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="welcomeScreen" options={{ title: "Boas Vindas" }} />
-      <Stack.Screen name="chooseCurse" options={{ headerShown: false }} />
+      <Stack.Screen 
+        name="welcomeScreen" 
+        options={{ title: "Boas Vindas" }} 
+      />
+      <Stack.Screen
+        name="periodSelectionScreen"
+        options={{ title: "Escolha seu período" }}
+      />
+      <Stack.Screen 
+        name="chooseCurse" 
+        options={{ title: "Escolha seu curso" }}
+      />
     </Stack>
   );
 }
