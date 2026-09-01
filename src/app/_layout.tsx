@@ -32,7 +32,7 @@ export default function RootLayout() {
         options={{ title: "Escolha seu período" }}
       />
       <Stack.Screen 
-        name="chooseCurse" 
+        name="chooseCourse" 
         options={{ title: "Escolha seu curso" }}
       />
     </Stack>
