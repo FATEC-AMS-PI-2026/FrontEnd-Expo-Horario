@@ -1,16 +1,29 @@
+import { Feather } from '@expo/vector-icons';
 import { useState } from "react";
 import {
   FlatList,
+  ListRenderItem,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
   View
 } from "react-native";
-// Importação atualizada para a biblioteca recomendada
-import { Feather } from '@expo/vector-icons';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const CURSOS = [
+interface Curso {
+  id: string;
+  nome: string;
+  periodo: string;
+  tipo: string;
+}
+
+const CURSOS: Curso[] = [
   { id: '1', nome: 'Analise e Desenvolvimento de Sistemas', periodo: 'Manhã', tipo: 'Tecnólogo' },
   { id: '2', nome: 'Gestão de Processos Gerenciais', periodo: 'Manhã', tipo: 'Tecnólogo' },
   { id: '3', nome: 'Analise e Desenvolvimento de Sistemas', periodo: 'Tarde (AMS)', tipo: 'Tecnólogo' },
@@ -19,39 +32,66 @@ const CURSOS = [
   { id: '6', nome: 'Secretariado', periodo: 'Manhã', tipo: 'Tecnólogo' },
 ];
 
+// O componente do cartão
+function CourseCard({ item }: { item: Curso }) {
+  const scale = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+  }));
+
+  const handlePressIn = () => {
+    
+    scale.value = withSpring(0.95, { damping: 80, stiffness: 500 });
+  };
+
+  const handlePressOut = () => {
+    scale.value = withSpring(1, { damping: 80, stiffness: 500 });
+  };
+
+  return (
+    <Animated.View style={[styles.cardWrapper, animatedStyle]}>
+      <Pressable
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        onPress={() => console.log('Clicou no curso:', item.nome)} 
+        style={styles.card}
+      >
+        <Text style={styles.cardTitle}>{item.nome}</Text>
+        <Text style={styles.cardSubtitle}>Período: {item.periodo}</Text>
+        <Text style={styles.cardSubtitle}>Tipo: {item.tipo}</Text>
+      </Pressable>
+    </Animated.View>
+  );
+}
+
 export default function ChooseCourse() {
   const [busca, setBusca] = useState('');
 
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <Text style={styles.cardTitle}>{item.nome}</Text>
-      <Text style={styles.cardSubtitle}>Período: {item.periodo}</Text>
-      <Text style={styles.cardSubtitle}>Tipo: {item.tipo}</Text>
-    </View>
+  const renderItem: ListRenderItem<Curso> = ({ item }) => (
+    <CourseCard item={item} />
   );
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         
-        {/* Título */}
         <Text style={styles.title}>Escolha seu curso</Text>
 
-        {/* Barra de Busca */}
         <View style={styles.searchContainer}>
           <Feather name="search" size={20} color="#333" />
           <View style={styles.separator} />
           <TextInput
-  style={styles.searchInput}
-  placeholder="Buscar"
-  placeholderTextColor="#ffffff"
-  value={busca}
-  onChangeText={setBusca}
-  underlineColorAndroid="transparent" // Adicione esta linha para o Android
-/>
+            style={[styles.searchInput, { outlineStyle: 'none' } as any]} 
+            placeholder="Buscar"
+            placeholderTextColor="#999999"
+            value={busca}
+            onChangeText={setBusca}
+            underlineColorAndroid="transparent"
+          />
         </View>
 
-        {/* Lista de Cursos */}
+        
         <FlatList
           data={CURSOS}
           keyExtractor={(item) => item.id}
@@ -79,7 +119,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
-    marginTop: 20, // Ajustado para evitar espaço excessivo com o novo SafeAreaView
+    marginTop: 20,
     marginBottom: 30,
     color: "#000",
   },
@@ -107,12 +147,14 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingBottom: 20,
   },
+  cardWrapper: {
+    marginBottom: 12, 
+  },
   card: {
     borderWidth: 1,
     borderColor: "#E5E5E5",
     borderRadius: 8,
     padding: 16,
-    marginBottom: 12,
     backgroundColor: "#fff",
   },
   cardTitle: {
@@ -126,5 +168,4 @@ const styles = StyleSheet.create({
     color: "#666",
     marginBottom: 4,
   },
-  
 });

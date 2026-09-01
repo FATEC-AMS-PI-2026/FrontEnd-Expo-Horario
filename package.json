@@ -5,6 +5,11 @@
   "dependencies": {
     "@expo/ui": "~57.0.9",
     "@expo/vector-icons": "^15.0.2",
+    "@gorhom/bottom-sheet": "latest",
+    "@react-native-async-storage/async-storage": "latest",
+    "@react-native-community/datetimepicker": "latest",
+    "@react-native-community/slider": "latest",
+    "@tailwindcss/postcss": "^4.3.3",
     "expo": "~57.0.10",
     "expo-constants": "~57.0.9",
     "expo-device": "~57.0.1",
