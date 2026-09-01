@@ -1,0 +1,67 @@
+---
+sidebar_position: 1
+---
+
+# Visão Geral
+
+Bem-vindo ao guia de componentes do FrontEnd Expo.
+
+## Componentes Disponíveis
+
+### Formulários
+
+| Componente | Descrição | Documentação |
+|------------|-----------|--------------|
+| **Button** | Botão com variantes e animação | [Ver docs →](./button) |
+| **Input** | Campo de entrada com suporte a ícones | [Ver docs →](./input) |
+| **Switch** | Toggle ligado/desligado | [Ver docs →](./switch) |
+
+### Display
+
+| Componente | Descrição | Documentação |
+|------------|-----------|--------------|
+| **Card** | Container com header, content e footer | [Ver docs →](./card) |
+| **Badge** | Tag de status | [Ver docs →](./badge) |
+| **Tabs** | Navegação por abas com animação | [Ver docs →](./tabs) |
+| **Accordion** | Seções expansíveis com animação | [Ver docs →](./accordion) |
+
+---
+
+## Como Usar
+
+Todos os componentes estão em `src/components/` e podem ser importados individualmente ou pelo barrel export:
+
+```tsx
+// Import individual
+import { Button } from "../components/Button";
+
+// Import pelo barrel
+import { Button, Card, Input, Badge } from "../components";
+```
+
+---
+
+## Estrutura de Arquivos
+
+```
+src/components/
+  Accordion.tsx    # Accordion e AccordionItem
+  Badge.tsx        # Badge com variantes
+  Button.tsx       # Botão com variantes e animação
+  Card.tsx         # Card, CardHeader, CardContent, CardFooter
+  Input.tsx        # Input com ícones e focus state
+  Switch.tsx       # Switch com label
+  Tabs.tsx         # Tabs e TabPanel com animação
+  Text.tsx         # Text com variantes
+  index.ts         # Barrel export
+```
+
+---
+
+## Animações
+
+Os componentes usam `react-native-reanimated` para animações:
+
+- **Button**: Scale 0.92 no press com spring
+- **Tabs**: Indicador desliza com spring
+- **Accordion**: Expand/collapse com spring

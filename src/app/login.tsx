@@ -1,195 +1,85 @@
-import { Text, View, TextInput, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { Pressable, Text, TextInput, View } from "react-native";
 
 export default function Login() {
   return (
-    <View style={styles.container}>
-
+    <View className="flex-1 items-center justify-center bg-muted px-6">
       
-      <View style={styles.header}>
-        <Text style={styles.title}>Login</Text>
+      
+      <View className="mb-8 items-center">
+        <Text className="mb-2 font-display text-2xl text-text-primary">
+          Login
+        </Text>
 
-        <Text style={styles.subtitle}>
+        <Text className="font-body text-sm text-text-secondary">
           Insira seus dados para entrar
         </Text>
       </View>
 
       
-      <View style={styles.form}>
+      <View className="w-full max-w-[400px] rounded-xl bg-background p-6">
 
         
-        <View style={styles.inputContainer}>
-          <Text style={styles.label}>Email</Text>
+        <View className="mb-5">
+          <Text className="mb-2 font-display text-sm text-text-primary">
+            Email
+          </Text>
 
           <TextInput
-            style={styles.input}
+            className="h-12 rounded-lg border border-border bg-background px-3.5 font-body text-sm text-text-primary"
             placeholder="Email"
+            placeholderTextColor="#66666659"
             keyboardType="email-address"
-             placeholderTextColor="rgba(0, 0, 0, 0.35)"
             autoCapitalize="none"
           />
         </View>
 
         
-        <Text style={styles.label}>Senha</Text>
-        <View style={styles.passwordContainer}>
-          <TextInput
-            style={styles.passwordInput}
-            placeholder="Senha"
-             placeholderTextColor="rgba(0, 0, 0, 0.35)"
-            secureTextEntry
-          />
+        <View>
+          <Text className="mb-2 font-display text-sm text-text-primary">
+            Senha
+          </Text>
 
-          <Pressable style={styles.eyeButton}>
-            <Ionicons
-              name="eye-outline"
-              size={22}
-              color="#005C6E"
+          <View className="h-12 flex-row items-center rounded-lg border border-border bg-background">
+            <TextInput
+              className="h-full flex-1 px-3.5 font-body text-sm text-text-primary"
+              placeholder="Senha"
+              placeholderTextColor="#66666659"
+              secureTextEntry
             />
-          </Pressable>
+
+            <Pressable className="px-3.5">
+              <Ionicons
+                name="eye-outline"
+                size={22}
+                color="#005C6E"
+              />
+            </Pressable>
+          </View>
         </View>
 
         
-        <Pressable style={styles.forgotPassword}>
-          <Text style={styles.forgotPasswordText}>
+        <Pressable className="mb-5 mt-2 items-start">
+          <Text className="font-body text-sm text-text-accent">
             Esqueci minha senha
           </Text>
         </Pressable>
 
-       
-        <Pressable style={styles.button}>
-          <Text style={styles.buttonText}>Entrar</Text>
+        
+        <Pressable className="h-12 items-center justify-center rounded-lg bg-primary">
+          <Text className="font-display text-sm text-text-inverse">
+            Entrar
+          </Text>
         </Pressable>
 
-       
-
-        <Pressable style={styles.registerButton}>
-          <Text style={styles.registerText}>
+        
+        <Pressable className="mt-5 h-12 items-center justify-center rounded-lg border border-primary bg-background">
+          <Text className="font-display text-sm text-text-accent">
             Não tem uma conta? Crie uma
           </Text>
         </Pressable>
 
-
-
       </View>
-
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#F5F5F5",
-    justifyContent: "center",
-    paddingHorizontal: 24,
-  },
-
-  header: {
-    alignItems: "center",
-    marginBottom: 32,
-  },
-
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: "#222222",
-    marginBottom: 8,
-  },
-
-  subtitle: {
-    fontSize: 13,
-    color: "#666666",
-    textAlign: "center",
-  },
-
-  form: {
-    backgroundColor: "#FFFFFF",
-    padding: 24,
-    borderRadius: 12,
-  },
-
-  inputContainer: {
-    marginBottom: 20,
-  },
-
-  label: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#333333",
-    marginBottom: 8,
-  },
-
-  input: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: "#D1D1D1",
-    borderRadius: 8,
-    paddingHorizontal: 14,
-    fontSize: 14,
-    backgroundColor: "#FFFFFF",
-  },
-
-  forgotPassword: {
-    alignItems: "flex-start",
-    marginBottom: 20,
-    marginTop: 8,
-  },
-
-  forgotPasswordText: {
-    fontSize: 13,
-    color: "#005C6E",
-  },
-
-  button: {
-    height: 48,
-    backgroundColor: "#005C6E",
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  buttonText: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#FFFFFF",
-  },
-
-  registerButton: {
-    height: 48,
-    backgroundColor: "#c0c0c0",
-    alignItems: "center",
-    marginTop: 20,
-    borderRadius: 8,
-    justifyContent: "center",
-  },
-
-  registerText: {
-    fontSize: 14,
-    color: "#005C6E",
-  },
-
-  registerLink: {
-    color: "#005C6E",
-    fontWeight: "600",
-  },
-  passwordContainer: {
-    height: 48,
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#D1D1D1",
-    borderRadius: 8,
-  },
-
-  passwordInput: {
-    flex: 1,
-    height: "100%",
-    paddingHorizontal: 14,
-    fontSize: 14,
-  },
-
-  eyeButton: {
-    paddingHorizontal: 14,
-  },
-});
