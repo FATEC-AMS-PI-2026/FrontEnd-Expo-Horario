@@ -1,12 +1,12 @@
 import {
+  ActivityIndicator,
   Pressable,
   PressableProps,
-  ActivityIndicator,
   Text,
 } from "react-native";
 import Animated, {
-  useSharedValue,
   useAnimatedStyle,
+  useSharedValue,
   withSpring,
 } from "react-native-reanimated";
 
