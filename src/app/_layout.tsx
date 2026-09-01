@@ -24,7 +24,6 @@ export default function RootLayout() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       <Stack.Screen name="welcomeScreen" options={{ title: "Boas Vindas" }} />
-      {/* A tela que você adicionou na sua branch */}
       <Stack.Screen name="chooseCurse" options={{ headerShown: false }} />
     </Stack>
   );
