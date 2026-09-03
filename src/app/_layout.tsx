@@ -27,6 +27,10 @@ export default function RootLayout() {
         name="welcomeScreen" 
         options={{ title: "Boas Vindas" }} 
       />
+      <Stack.Screen 
+        name="SignUpScreen" 
+        options={{ title: "Criar Conta" }}
+      />
       <Stack.Screen
         name="periodSelectionScreen"
         options={{ title: "Escolha seu período" }}
@@ -36,5 +40,6 @@ export default function RootLayout() {
         options={{ title: "Escolha seu curso" }}
       />
     </Stack>
+    
   );
 }
