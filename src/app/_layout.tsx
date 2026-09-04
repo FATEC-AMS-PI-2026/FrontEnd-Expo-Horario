@@ -1,3 +1,5 @@
+import "../../global.css";
+
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -23,23 +25,7 @@ export default function RootLayout() {
 
   return (
     <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen
-        name="welcomeScreen"
-        options={{ title: "Boas Vindas" }}
-      />
-      <Stack.Screen
-        name="SignUpScreen"
-        options={{ title: "Criar Conta" }}
-      />
-      <Stack.Screen
-        name="periodSelectionScreen"
-        options={{ title: "Escolha seu período" }}
-      />
-      <Stack.Screen
-        name="chooseCourse"
-        options={{ title: "Escolha seu curso" }}
-      />
+      <Stack.Screen name="(auth)" />
     </Stack>
-
   );
 }
