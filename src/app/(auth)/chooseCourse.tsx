@@ -1,4 +1,5 @@
 import { Feather } from '@expo/vector-icons';
+import { router } from "expo-router";
 import { useState } from "react";
 import {
     FlatList,
@@ -41,7 +42,6 @@ function CourseCard({ item }: { item: Curso }) {
   }));
 
   const handlePressIn = () => {
-    
     scale.value = withSpring(0.95, { damping: 80, stiffness: 500 });
   };
 
@@ -54,7 +54,7 @@ function CourseCard({ item }: { item: Curso }) {
       <Pressable
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        onPress={() => console.log('Clicou no curso:', item.nome)} 
+        onPress={() => router.push("/periodSelectionScreen")}
         style={styles.card}
       >
         <Text style={styles.cardTitle}>{item.nome}</Text>
@@ -91,7 +91,6 @@ export default function ChooseCourse() {
           />
         </View>
 
-        
         <FlatList
           data={CURSOS}
           keyExtractor={(item) => item.id}
@@ -104,7 +103,6 @@ export default function ChooseCourse() {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
