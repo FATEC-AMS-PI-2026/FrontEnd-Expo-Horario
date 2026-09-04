@@ -21,5 +21,25 @@ export default function RootLayout() {
 
   if (!fontsLoaded) return null;
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen
+        name="welcomeScreen"
+        options={{ title: "Boas Vindas" }}
+      />
+      <Stack.Screen
+        name="SignUpScreen"
+        options={{ title: "Criar Conta" }}
+      />
+      <Stack.Screen
+        name="periodSelectionScreen"
+        options={{ title: "Escolha seu período" }}
+      />
+      <Stack.Screen
+        name="chooseCourse"
+        options={{ title: "Escolha seu curso" }}
+      />
+    </Stack>
+
+  );
 }

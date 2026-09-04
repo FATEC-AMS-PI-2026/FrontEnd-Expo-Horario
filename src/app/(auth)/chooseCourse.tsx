@@ -2,18 +2,18 @@ import { Feather } from '@expo/vector-icons';
 import { router } from "expo-router";
 import { useState } from "react";
 import {
-  FlatList,
-  ListRenderItem,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
+    FlatList,
+    ListRenderItem,
+    Pressable,
+    StyleSheet,
+    Text,
+    TextInput,
+    View
 } from "react-native";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
