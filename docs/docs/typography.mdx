@@ -1,0 +1,87 @@
+---
+sidebar_position: 2
+---
+
+# Tipografia
+
+Fontes e estilos de texto do design system.
+
+## Fonte
+
+O projeto usa **Poppins** como fonte principal.
+
+| Peso | Arquivo | Uso |
+|------|---------|-----|
+| Regular (400) | `Poppins-Regular.ttf` | Corpo de texto |
+| Medium (500) | `Poppins-Medium.ttf` | Labels, botões |
+| SemiBold (600) | `Poppins-SemiBold.ttf` | Subtítulos |
+| Bold (700) | `Poppins-Bold.ttf` | Títulos |
+
+### Variáveis CSS
+
+```css
+--font-display: "Poppins-Bold";
+--font-body: "Poppins-Regular";
+```
+
+### Classes NativeWind
+
+```tsx
+// Título
+<Text className="font-[Poppins-Bold]">Título</Text>
+
+// Subtítulo
+<Text className="font-[Poppins-SemiBold]">Subtítulo</Text>
+
+// Corpo
+<Text className="font-[Poppins-Regular]">Corpo de texto</Text>
+
+// Label
+<Text className="font-[Poppins-Medium]">Label</Text>
+```
+
+---
+
+## Componente Text
+
+O componente `Text` encapsula os estilos de tipografia.
+
+### Props
+
+| Prop | Tipo | Default | Descrição |
+|------|------|---------|-----------|
+| `variant` | `"heading" \| "subheading" \| "body" \| "caption" \| "label"` | `"body"` | Variante visual |
+| `className` | `string` | - | Classes adicionais |
+
+### Exemplos
+
+```tsx
+<Text variant="heading">Título Principal</Text>
+<Text variant="subheading">Subtítulo</Text>
+<Text variant="body">Corpo de texto</Text>
+<Text variant="caption">Legenda</Text>
+<Text variant="label">Label</Text>
+```
+
+### Resultado
+
+| Variante | Tamanho | Peso | Cor |
+|----------|---------|------|-----|
+| `heading` | 24px | Bold | Preto |
+| `subheading` | 18px | SemiBold | Preto |
+| `body` | 16px | Regular | Preto |
+| `caption` | 14px | Regular | Cinza (#71717a) |
+| `label` | 14px | Medium | Cinza (#9ca3af) |
+
+---
+
+## Escala de Tamanhos
+
+| Classe | Tamanho | Exemplo |
+|--------|---------|---------|
+| `text-xs` | 12px | <span style={{fontSize: 12}}>Texto pequeno</span> |
+| `text-sm` | 14px | <span style={{fontSize: 14}}>Texto small</span> |
+| `text-base` | 16px | <span style={{fontSize: 16}}>Texto base</span> |
+| `text-lg` | 18px | <span style={{fontSize: 18}}>Texto large</span> |
+| `text-xl` | 20px | <span style={{fontSize: 20}}>Texto XL</span> |
+| `text-2xl` | 24px | <span style={{fontSize: 24}}>Texto 2XL</span> |

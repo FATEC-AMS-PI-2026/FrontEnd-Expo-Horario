@@ -1,0 +1,131 @@
+---
+sidebar_position: 7
+---
+
+# Tabs
+
+Navegação por abas com indicador animado.
+
+## Importação
+
+```tsx
+import { Tabs, TabPanel } from "../components";
+```
+
+## Básico
+
+```tsx
+const [activeTab, setActiveTab] = useState("tab1");
+
+const tabs = [
+  { key: "tab1", label: "Tab 1" },
+  { key: "tab2", label: "Tab 2" },
+  { key: "tab3", label: "Tab 3" },
+];
+
+<Tabs tabs={tabs} activeKey={activeTab} onChange={setActiveTab} />
+<TabPanel
+  activeKey={activeTab}
+  panels={{
+    tab1: <Text>Conteúdo 1</Text>,
+    tab2: <Text>Conteúdo 2</Text>,
+    tab3: <Text>Conteúdo 3</Text>,
+  }}
+/>
+```
+
+---
+
+## Animação
+
+O indicador usa `react-native-reanimated` com spring:
+
+- **translateX**: Desliza horizontalmente
+- **width**: Ajusta à largura da tab
+- **Spring**: damping 20, stiffness 300
+
+---
+
+## Props
+
+### Tabs
+
+| Prop | Tipo | Default | Descrição |
+|------|------|---------|-----------|
+| `tabs` | `Tab[]` | - | Array de `{ key, label }` |
+| `activeKey` | `string` | - | Tab ativa |
+| `onChange` | `(key: string) => void` | - | Callback ao mudar |
+| `className` | `string` | - | Classes adicionais |
+
+### TabPanel
+
+| Prop | Tipo | Default | Descrição |
+|------|------|---------|-----------|
+| `activeKey` | `string` | - | Tab ativa |
+| `panels` | `Record<string, ReactNode>` | - | Conteúdo por tab |
+
+---
+
+## Cores
+
+| Elemento | Inativo | Ativo |
+|----------|---------|-------|
+| Texto | `#71717a` (muted-foreground) | `#005C6E` (primary) |
+| Indicador | - | `#005C6E` (primary) |
+| Borda inferior | `#DADADA` (border) | Transparente |
+
+---
+
+## Exemplos
+
+### Abas de conteúdo
+
+```tsx
+const [tab, setTab] = useState("info");
+
+<View>
+  <Tabs
+    tabs={[
+      { key: "info", label: "Informações" },
+      { key: "config", label: "Configurações" },
+      { key: "stats", label: "Estatísticas" },
+    ]}
+    activeKey={tab}
+    onChange={setTab}
+  />
+  <TabPanel
+    activeKey={tab}
+    panels={{
+      info: <Text>Informações gerais</Text>,
+      config: <Text>Configurações do projeto</Text>,
+      stats: <Text>Gráficos e métricas</Text>,
+    }}
+  />
+</View>
+```
+
+### Abas com cards
+
+```tsx
+const [tab, setTab] = useState("todos");
+
+<View>
+  <Tabs
+    tabs={[
+      { key: "todos", label: "Todos" },
+      { key: "ativos", label: "Ativos" },
+      { key: "arquivados", label: "Arquivados" },
+    ]}
+    activeKey={tab}
+    onChange={setTab}
+  />
+  <View className="py-4 gap-3">
+    <Card>
+      <Text>Item 1</Text>
+    </Card>
+    <Card>
+      <Text>Item 2</Text>
+    </Card>
+  </View>
+</View>
+```

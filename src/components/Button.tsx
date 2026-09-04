@@ -11,6 +11,7 @@ import Animated, {
 } from "react-native-reanimated";
 
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "destructive";
+
 type Size = "xs" | "sm" | "md" | "lg";
 
 interface ButtonProps extends PressableProps {
