@@ -1,4 +1,5 @@
 import { Feather } from '@expo/vector-icons';
+import { LucideChevronLeft } from 'lucide-react-native';
 import { router } from "expo-router";
 import { useState } from "react";
 import {
@@ -10,6 +11,7 @@ import {
     TextInput,
     View
 } from "react-native";
+import { Button } from "../../components";
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -76,6 +78,20 @@ export default function ChooseCourse() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         
+        <View>
+          <Button
+            className="btn w-fit justify-center align-center"
+            variant="secondary"
+            size="sm"
+            onPress={() => router.back()}
+          >
+            <View className="flex-row gap-1 items-center">
+              <LucideChevronLeft size={16} />
+              <Text className="text-primary m-0">Voltar</Text>
+            </View>
+          </Button>
+        </View>
+
         <Text style={styles.title}>Escolha seu curso</Text>
 
         <View style={styles.searchContainer}>
