@@ -11,7 +11,8 @@ import Animated, {
 } from "react-native-reanimated";
 
 type Variant = "primary" | "secondary" | "outline" | "ghost" | "destructive";
-type Size = "sm" | "md" | "lg";
+
+type Size = "xs" | "sm" | "md" | "lg";
 
 interface ButtonProps extends PressableProps {
   variant?: Variant;
@@ -30,6 +31,7 @@ const variantClasses: Record<Variant, string> = {
 };
 
 const sizeClasses: Record<Size, string> = {
+  xs: "px-3 py-1.0 rounded-[10px]",
   sm: "px-3 py-1.5 rounded-sm",
   md: "px-4 py-3.5 rounded-[10px]",
   lg: "px-6 py-5.5 rounded-[21px]",
