@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import { User } from "lucide-react-native";
 import { Text } from "./Text";
 
 interface ScheduleItemProps {
@@ -16,48 +17,58 @@ export function ScheduleItem({
   subject,
   teacher,
   location,
-  accentColor,
+  accentColor = "#0B6878",
 }: ScheduleItemProps) {
   return (
-    <View className="flex-row items-center bg-white rounded-xl px-3 py-3 mb-2">
-
+    <View className="flex-row items-center bg-white rounded-xl px-3 py-3 mb-1 overflow-hidden">
       {/* Barra lateral */}
-      {accentColor && (
-        <View
-          className="w-2 h-16 rounded-full mr-3"
-          style={{ backgroundColor: accentColor }}
-        />
-      )}
+      <View
+        className="w-1.5 h-14 rounded-full mr-3 shrink-0"
+        style={{ backgroundColor: accentColor }}
+      />
 
       {/* Horários */}
-      <View className="w-20">
-        <Text variant="caption" className="text-gray-600">
+      <View className="w-[58px] shrink-0 mr-1">
+        <Text variant="caption" className="text-gray-600 leading-4">
           {startTime}
         </Text>
-
-        <Text variant="caption" className="text-gray-600 mt-2">
+        <Text variant="caption" className="text-gray-600 mt-1.5 leading-4">
           {endTime}
         </Text>
       </View>
 
       {/* Informações da aula */}
-      <View className="flex-1">
-        <Text variant="body" className="text-black">
+      <View className="flex-1 min-w-0 pr-1">
+        <Text
+          variant="body"
+          className="text-black font-medium"
+          numberOfLines={2}
+        >
           {subject}
         </Text>
 
-        <Text variant="caption" className="text-[#0B6878] mt-1">
-          Prof: {teacher}
-        </Text>
+        <View className="flex-row items-center mt-0.5 gap-1">
+          <User size={13} color="#0B6878" strokeWidth={2.2} />
+          <Text
+            variant="caption"
+            className="text-[#0B6878] flex-1"
+            numberOfLines={1}
+          >
+            {teacher}
+          </Text>
+        </View>
       </View>
 
       {/* Local */}
-      <View>
-        <Text variant="body" className="text-[#0B6878]">
+      <View className="shrink-0 max-w-[72px] items-end">
+        <Text
+          variant="body"
+          className="text-[#0B6878] text-right"
+          numberOfLines={1}
+        >
           {location}
         </Text>
       </View>
-
     </View>
   );
 }
