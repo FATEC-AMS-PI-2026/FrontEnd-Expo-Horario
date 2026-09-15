@@ -6,7 +6,7 @@ import { router } from "expo-router";
 export default function PeriodSelectionScreen() {
     return (
         <ScrollView className="flex-1 bg-white p-4 w-full items-center">
-            
+
             <View>
                 <Button
                     className="btn w-fit justify-center align-center"
