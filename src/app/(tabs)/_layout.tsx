@@ -1,33 +1,35 @@
 import { Tabs } from "expo-router";
 import {
-  Clock4,
-  House,
-  IdCardLanyard,
-  Library,
-  Settings,
+    Clock4,
+    House,
+    IdCardLanyard,
+    Library,
+    Settings,
 } from "lucide-react-native";
 import { StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MainLayout() {
   return (
-    <Tabs
-      screenOptions={{
-        headerShown: false,
+    <SafeAreaView style={{ flex: 1 }}>
+      <Tabs
+        screenOptions={{
+          headerShown: false,
 
-        tabBarActiveTintColor: "#FFFFFF",
-        tabBarInactiveTintColor: "#B0BEC5",
+          tabBarActiveTintColor: "#FFFFFF",
+          tabBarInactiveTintColor: "#B0BEC5",
 
-        tabBarStyle: styles.tabBar,
+          tabBarStyle: styles.tabBar,
 
-        tabBarLabelStyle: styles.tabBarLabel,
-      }}
-    >
+          tabBarLabelStyle: styles.tabBarLabel,
+        }}
+      >
       <Tabs.Screen
         name="home"
         options={{
           title: "Início",
           tabBarIcon: ({ color, size }) => (
-            <House color={color} size={size} />
+            <House color={color} size={Math.max(size, 26)} />
           ),
         }}
       />
@@ -37,7 +39,7 @@ export default function MainLayout() {
         options={{
           title: "Matérias",
           tabBarIcon: ({ color, size }) => (
-            <Clock4 color={color} size={size} />
+            <Clock4 color={color} size={Math.max(size, 26)} />
           ),
         }}
       />
@@ -47,7 +49,7 @@ export default function MainLayout() {
         options={{
           title: "Salas",
           tabBarIcon: ({ color, size }) => (
-            <Library color={color} size={size} />
+            <Library color={color} size={Math.max(size, 26)} />
           ),
         }}
       />
@@ -57,7 +59,7 @@ export default function MainLayout() {
         options={{
           title: "Professores",
           tabBarIcon: ({ color, size }) => (
-            <IdCardLanyard color={color} size={size} />
+            <IdCardLanyard color={color} size={Math.max(size, 26)} />
           ),
         }}
       />
@@ -67,11 +69,12 @@ export default function MainLayout() {
         options={{
           title: "Configurações",
           tabBarIcon: ({ color, size }) => (
-            <Settings color={color} size={size} />
+            <Settings color={color} size={Math.max(size, 26)} />
           ),
         }}
       />
-    </Tabs>
+      </Tabs>
+    </SafeAreaView>
   );
 }
 
@@ -93,10 +96,7 @@ const styles = StyleSheet.create({
 
     borderTopWidth: 0,
 
-    elevation: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
+    boxShadow: "0 -2px 10px rgba(0, 0, 0, 0.1)",
   },
 
   tabBarLabel: {

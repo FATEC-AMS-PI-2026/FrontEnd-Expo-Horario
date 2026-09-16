@@ -14,35 +14,35 @@ export function BottomMenu() {
       <View className="h-16 rounded-xl bg-primary flex-row items-center justify-around px-2">
 
         <Pressable className="h-14 w-16 rounded-xl bg-primary-dark items-center justify-center">
-          <House size={20} color="#FFFFFF" />
+          <House size={24} color="#FFFFFF" />
           <Text variant="caption" className="text-white mt-1">
             Início
           </Text>
         </Pressable>
 
         <Pressable className="h-14 w-16 rounded-xl items-center justify-center">
-          <Clock size={20} color="#FFFFFF" />
+          <Clock size={24} color="#FFFFFF" />
           <Text variant="caption" className="text-white mt-1">
             Matérias
           </Text>
         </Pressable>
 
         <Pressable className="h-14 w-16 rounded-xl items-center justify-center">
-          <Library size={20} color="#FFFFFF" />
+          <Library size={24} color="#FFFFFF" />
           <Text variant="caption" className="text-white mt-1">
             Salas
           </Text>
         
         </Pressable>
                 <Pressable className="h-14 w-16 rounded-xl items-center justify-center">
-          <IdCardLanyard size={20} color="#FFFFFF" />
+          <IdCardLanyard size={24} color="#FFFFFF" />
           <Text variant="caption" className="text-white mt-1">
             Professores
           </Text>
         </Pressable>
 
         <Pressable className="h-14 w-16 rounded-xl items-center justify-center">
-          <Settings size={20} color="#FFFFFF" />
+          <Settings size={24} color="#FFFFFF" />
           <Text variant="caption" className="text-white mt-1">
             Configurações
           </Text>

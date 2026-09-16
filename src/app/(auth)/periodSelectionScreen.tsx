@@ -1,21 +1,24 @@
-import { ScrollView, View } from "react-native";
-import { LucideChevronLeft } from "lucide-react-native";
-import { Text, Button } from "../../components";
 import { router } from "expo-router";
+import { LucideChevronLeft } from "lucide-react-native";
+import { ScrollView, View } from "react-native";
+import { Button, Text } from "../../components";
 
 export default function PeriodSelectionScreen() {
     return (
-        <ScrollView className="flex-1 bg-white p-4 w-full items-center">
+        <ScrollView
+            className="flex-1 bg-white p-4 w-full"
+            contentContainerStyle={{ alignItems: "center" }}
+        >
 
-            <View>
+            <View className="w-full max-w-[400px]">
                 <Button
-                    className="btn w-fit justify-center align-center"
+                    className="btn w-26 justify-center align-center"
                     variant="secondary"
                     size="sm"
                     onPress={() => router.push("/chooseCourse")}
                 >
                     <View className="flex-row gap-1 items-center">
-                        <LucideChevronLeft size={16} />
+                        <LucideChevronLeft size={24} />
                         <Text className="text-primary m-0">Voltar</Text>
                     </View>
                 </Button>
@@ -31,7 +34,7 @@ export default function PeriodSelectionScreen() {
                 </Text>
             </View>
 
-            <View className="flex flex-col justify-center gap-2">
+            <View className="flex flex-col justify-center gap-2 w-full">
                 <Button
                     className="btn"
                     variant="outline"

@@ -1,23 +1,22 @@
 import { Feather } from '@expo/vector-icons';
-import { LucideChevronLeft } from 'lucide-react-native';
 import { router } from "expo-router";
+import { LucideChevronLeft } from 'lucide-react-native';
 import { useState } from "react";
 import {
-    FlatList,
-    ListRenderItem,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
+  FlatList,
+  ListRenderItem,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
 } from "react-native";
-import { Button } from "../../components";
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "../../components";
 
 interface Curso {
   id: string;
@@ -75,18 +74,18 @@ export default function ChooseCourse() {
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <View style={styles.safeArea}>
       <View style={styles.container}>
         
         <View>
           <Button
-            className="btn w-fit justify-center align-center"
+            className="btn w-26 justify-center align-center"
             variant="secondary"
             size="sm"
             onPress={() => router.back()}
           >
             <View className="flex-row gap-1 items-center">
-              <LucideChevronLeft size={16} />
+              <LucideChevronLeft size={24} />
               <Text className="text-primary m-0">Voltar</Text>
             </View>
           </Button>
@@ -95,7 +94,7 @@ export default function ChooseCourse() {
         <Text style={styles.title}>Escolha seu curso</Text>
 
         <View style={styles.searchContainer}>
-          <Feather name="search" size={20} color="#333" />
+          <Feather name="search" size={24} color="#333" />
           <View style={styles.separator} />
           <TextInput
             style={[styles.searchInput, { outlineStyle: 'none' } as any]} 
@@ -116,7 +115,7 @@ export default function ChooseCourse() {
         />
         
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
