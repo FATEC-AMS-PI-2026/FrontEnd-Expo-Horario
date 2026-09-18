@@ -15,7 +15,7 @@ export default function PeriodSelectionScreen() {
         >
             <View>
                 <Button
-                    className="btn w-fit justify-center align-center"
+                    className="btn w-26 justify-center align-center"
                     variant="secondary"
                     size="sm"
                     onPress={() => router.push("/chooseCourse")}

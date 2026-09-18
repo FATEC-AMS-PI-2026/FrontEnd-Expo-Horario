@@ -93,31 +93,23 @@ export default function ChooseCourse() {
       <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View>
           <Button
-            className="btn w-fit justify-center align-center"
+            className="btn w-26 justify-center align-center"
             variant="secondary"
             size="sm"
             onPress={() => router.back()}
           >
             <View className="flex-row gap-1 items-center">
-              <LucideChevronLeft size={16} />
-              <Text style={{ color: colors.text }} className="m-0">Voltar</Text>
+              <LucideChevronLeft size={24} />
+              <Text className="text-primary m-0">Voltar</Text>
             </View>
           </Button>
         </View>
 
         <Text style={[styles.title, { color: colors.text }]}>Escolha seu curso</Text>
 
-        <View
-          style={[
-            styles.searchContainer,
-            {
-              backgroundColor: darkMode ? colors.surface : "#ffffff",
-              borderColor: colors.border,
-            },
-          ]}
-        >
-          <Feather name="search" size={20} color={colors.textMuted} />
-          <View style={[styles.separator, { backgroundColor: colors.border }]} />
+        <View style={styles.searchContainer}>
+          <Feather name="search" size={24} color="#333" />
+          <View style={styles.separator} />
           <TextInput
             style={[styles.searchInput, { color: colors.text, outlineStyle: 'none' } as any]}
             placeholder="Buscar"
@@ -136,7 +128,7 @@ export default function ChooseCourse() {
           contentContainerStyle={styles.listContainer}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 }
 

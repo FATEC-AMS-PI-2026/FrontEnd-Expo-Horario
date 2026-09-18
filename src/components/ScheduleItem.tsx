@@ -1,5 +1,6 @@
-import { View } from "react-native";
-import { User } from "lucide-react-native";
+import { Ellipsis, User } from "lucide-react-native";
+import { Pressable, View } from "react-native";
+import { Button } from "./Button";
 import { Text } from "./Text";
 import { useAppTheme } from "../theme/ThemeContext";
 
@@ -10,6 +11,11 @@ interface ScheduleItemProps {
   teacher: string;
   location: string;
   accentColor?: string;
+  onMorePress?: () => void;
+  isEmpty?: boolean;
+  isSelected?: boolean;
+  onPress?: () => void;
+  onLongPress?: () => void;
 }
 
 export function ScheduleItem({
@@ -46,7 +52,7 @@ export function ScheduleItem({
           style={{ color: colors.text }}
           numberOfLines={2}
         >
-          {subject}
+          {isEmpty ? "Aula vazia" : subject}
         </Text>
 
         <View className="flex-row items-center mt-0.5 gap-1">
