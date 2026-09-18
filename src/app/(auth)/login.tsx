@@ -3,12 +3,14 @@ import { LucideChevronLeft, LucideEye } from "lucide-react-native";
 import { Pressable, View } from "react-native";
 
 import { Button, Input, Text } from "../../components";
+import { useAppTheme } from "../../theme/ThemeContext";
 
 export default function Login() {
   const router = useRouter();
+  const { colors } = useAppTheme();
 
   return (
-    <View className="flex-1 bg-white items-center">
+    <View className="flex-1 items-center" style={{ backgroundColor: colors.background }}>
       <View className="w-full max-w-[400px]">
         <View className="mt-5 mx-5">
           <Button

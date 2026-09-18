@@ -3,14 +3,17 @@ import { LucideChevronLeft } from "lucide-react-native";
 import { ScrollView, View } from "react-native";
 import { Button, Text } from "../../components";
 
+import { useAppTheme } from "../../theme/ThemeContext";
+
 export default function PeriodSelectionScreen() {
+    const { colors } = useAppTheme();
+
     return (
         <ScrollView
-            className="flex-1 bg-white p-4 w-full"
-            contentContainerStyle={{ alignItems: "center" }}
+            className="flex-1 p-4 w-full items-center"
+            style={{ backgroundColor: colors.background }}
         >
-
-            <View className="w-full max-w-[400px]">
+            <View>
                 <Button
                     className="btn w-26 justify-center align-center"
                     variant="secondary"
@@ -18,18 +21,20 @@ export default function PeriodSelectionScreen() {
                     onPress={() => router.push("/chooseCourse")}
                 >
                     <View className="flex-row gap-1 items-center">
-                        <LucideChevronLeft size={24} />
-                        <Text className="text-primary m-0">Voltar</Text>
+                        <LucideChevronLeft size={16} />
+                        <Text className="m-0" style={{ color: colors.text }}>
+                            Voltar
+                        </Text>
                     </View>
                 </Button>
             </View>
 
             <View className="w-full h-[12rem] justify-items-center items-center justify-center">
-                <Text className="text-center" variant="heading">
+                <Text className="text-center" variant="heading" style={{ color: colors.text }}>
                     Escolha seu período
                 </Text>
 
-                <Text className="text-center" variant="body">
+                <Text className="text-center" variant="body" style={{ color: colors.textMuted }}>
                     Selecione o período que está cursando agora.
                 </Text>
             </View>
@@ -67,7 +72,6 @@ export default function PeriodSelectionScreen() {
                     4° ano
                 </Button>
             </View>
-
         </ScrollView>
     );
 }
