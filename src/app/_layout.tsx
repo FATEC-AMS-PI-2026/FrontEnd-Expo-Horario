@@ -4,8 +4,12 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { configureReanimatedLogger } from "react-native-reanimated";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
+configureReanimatedLogger({ strict: false });
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
@@ -24,8 +28,12 @@ export default function RootLayout() {
   if (!fontsLoaded) return null;
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(auth)" />
-    </Stack>
+    <SafeAreaProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" />
+        </Stack>
+      </GestureHandlerRootView>
+    </SafeAreaProvider>
   );
 }

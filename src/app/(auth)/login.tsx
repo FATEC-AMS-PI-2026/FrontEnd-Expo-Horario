@@ -1,6 +1,6 @@
+import { useRouter } from "expo-router";
 import { LucideChevronLeft, LucideEye } from "lucide-react-native";
 import { Pressable, View } from "react-native";
-import { useRouter } from "expo-router";
 
 import { Button, Input, Text } from "../../components";
 
@@ -12,13 +12,13 @@ export default function Login() {
       <View className="w-full max-w-[400px]">
         <View className="mt-5 mx-5">
           <Button
-            className="btn w-fit justify-center align-center"
+            className="btn w-26 justify-center align-center"
             variant="secondary"
             size="sm"
             onPress={() => router.back()}
           >
             <View className="flex-row gap-1 items-center">
-              <LucideChevronLeft size={16} />
+              <LucideChevronLeft size={24} />
               <Text className="text-primary m-0">Voltar</Text>
             </View>
           </Button>
@@ -44,7 +44,7 @@ export default function Login() {
             rightIcon={
               <Pressable>
                 <Text className="text-text-accent">
-                  <LucideEye size={22} />
+                  <LucideEye size={24} />
                 </Text>
               </Pressable>
             }

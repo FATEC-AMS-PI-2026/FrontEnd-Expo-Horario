@@ -44,9 +44,9 @@ export default function Home() {
                 </CardHeader>
 
                 {/* Adicionei 'w-full' e 'flex-1' para o conteúdo se adaptar à largura */}
-                <CardContent className="bg-gray-200 rounded-2xl p-2 w-full flex-1">
+                <CardContent className="bg-gray-200 rounded-2xl p-2 w-full">
                     {/* Adicionei 'mb-2' para dar respiro entre os itens e 'w-full' */}
-                    <View className="w-full mb-2">
+                    <View className="w-full mb-1 h-20">
                         <ScheduleItem
                             startTime="13:20h"
                             endTime="15:00h"
@@ -57,7 +57,7 @@ export default function Home() {
                         />
                     </View>
 
-                    <View className="w-full">
+                    <View className="w-full h-20">
                         <ScheduleItem
                             startTime="15:00h"
                             endTime="16:50h"

@@ -1,9 +1,9 @@
+import { useRouter } from 'expo-router';
+import { LucideChevronLeft } from 'lucide-react-native';
 import { useState, } from 'react';
 import {
     View,
 } from 'react-native';
-import { LucideChevronLeft } from 'lucide-react-native';
-import { useRouter } from 'expo-router';
 import { Button, Input, Text } from '../../components';
 
 export default function CadastroScreen() {
@@ -44,7 +44,7 @@ export default function CadastroScreen() {
                 onPress={() => router.back()}
               >
                 <View className="flex-row gap-1 items-center">
-                  <LucideChevronLeft size={16} />
+                  <LucideChevronLeft size={24} />
                   <Text className="text-primary m-0">Voltar</Text>
                 </View>
               </Button>
