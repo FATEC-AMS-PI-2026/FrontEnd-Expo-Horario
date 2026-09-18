@@ -1,11 +1,10 @@
 import { useState } from "react";
 import { Pressable, View, Text } from "react-native";
+import { LayoutChangeEvent } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  LayoutChangeEvent,
-  runOnJS,
 } from "react-native-reanimated";
 
 interface AccordionItemProps {

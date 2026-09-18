@@ -1,25 +1,35 @@
 import { Tabs } from "expo-router";
 import {
-  Clock4,
-  House,
-  IdCardLanyard,
-  Library,
-  Settings,
+    Clock4,
+    House,
+    IdCardLanyard,
+    Library,
+    Settings,
 } from "lucide-react-native";
 import { StyleSheet } from "react-native";
 
+import { useAppTheme } from "../../theme/ThemeContext";
+
 export default function MainLayout() {
+  const { colors, darkMode } = useAppTheme();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
 
-        tabBarActiveTintColor: "#FFFFFF",
-        tabBarInactiveTintColor: "#B0BEC5",
+        tabBarActiveTintColor: darkMode ? colors.text : "#FFFFFF",
+        tabBarInactiveTintColor: darkMode ? "#94a3b8" : "#B0BEC5",
 
-        tabBarStyle: styles.tabBar,
+        tabBarStyle: {
+          ...styles.tabBar,
+          backgroundColor: darkMode ? colors.surface : "#004B57",
+        },
 
-        tabBarLabelStyle: styles.tabBarLabel,
+        tabBarLabelStyle: {
+          ...styles.tabBarLabel,
+          color: darkMode ? colors.text : "#FFFFFF",
+        },
       }}
     >
       <Tabs.Screen

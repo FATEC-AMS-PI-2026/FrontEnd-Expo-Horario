@@ -1,6 +1,7 @@
 import { View } from "react-native";
 import { User } from "lucide-react-native";
 import { Text } from "./Text";
+import { useAppTheme } from "../theme/ThemeContext";
 
 interface ScheduleItemProps {
   startTime: string;
@@ -17,41 +18,43 @@ export function ScheduleItem({
   subject,
   teacher,
   location,
-  accentColor = "#0B6878",
+  accentColor,
 }: ScheduleItemProps) {
+  const { colors } = useAppTheme();
+  const accent = accentColor ?? colors.accent;
+
   return (
-    <View className="flex-row items-center bg-white rounded-xl px-3 py-3 mb-1 overflow-hidden">
-      {/* Barra lateral */}
+    <View className="flex-row items-center rounded-xl px-3 py-3 mb-1 overflow-hidden" style={{ backgroundColor: colors.surface }}>
       <View
         className="w-1.5 h-14 rounded-full mr-3 shrink-0"
-        style={{ backgroundColor: accentColor }}
+        style={{ backgroundColor: accent }}
       />
 
-      {/* Horários */}
       <View className="w-[58px] shrink-0 mr-1">
-        <Text variant="caption" className="text-gray-600 leading-4">
+        <Text variant="caption" className="leading-4" style={{ color: colors.textMuted }}>
           {startTime}
         </Text>
-        <Text variant="caption" className="text-gray-600 mt-1.5 leading-4">
+        <Text variant="caption" className="mt-1.5 leading-4" style={{ color: colors.textMuted }}>
           {endTime}
         </Text>
       </View>
 
-      {/* Informações da aula */}
       <View className="flex-1 min-w-0 pr-1">
         <Text
           variant="body"
-          className="text-black font-medium"
+          className="font-medium"
+          style={{ color: colors.text }}
           numberOfLines={2}
         >
           {subject}
         </Text>
 
         <View className="flex-row items-center mt-0.5 gap-1">
-          <User size={13} color="#0B6878" strokeWidth={2.2} />
+          <User size={13} color={accent} strokeWidth={2.2} />
           <Text
             variant="caption"
-            className="text-[#0B6878] flex-1"
+            className="flex-1"
+            style={{ color: accent }}
             numberOfLines={1}
           >
             {teacher}
@@ -59,11 +62,11 @@ export function ScheduleItem({
         </View>
       </View>
 
-      {/* Local */}
       <View className="shrink-0 max-w-[72px] items-end">
         <Text
           variant="body"
-          className="text-[#0B6878] text-right"
+          className="text-right"
+          style={{ color: accent }}
           numberOfLines={1}
         >
           {location}

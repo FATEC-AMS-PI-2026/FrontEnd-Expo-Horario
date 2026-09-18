@@ -1,23 +1,25 @@
 import { Feather } from '@expo/vector-icons';
-import { LucideChevronLeft } from 'lucide-react-native';
 import { router } from "expo-router";
+import { LucideChevronLeft } from 'lucide-react-native';
 import { useState } from "react";
 import {
-    FlatList,
-    ListRenderItem,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View
+  FlatList,
+  ListRenderItem,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View
 } from "react-native";
-import { Button } from "../../components";
+
 import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-    withSpring,
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Button } from "../../components";
+import { useAppTheme } from "../../theme/ThemeContext";
 
 interface Curso {
   id: string;
@@ -35,9 +37,9 @@ const CURSOS: Curso[] = [
   { id: '6', nome: 'Secretariado', periodo: 'Manhã', tipo: 'Tecnólogo' },
 ];
 
-// O componente do cartão
 function CourseCard({ item }: { item: Curso }) {
   const scale = useSharedValue(1);
+  const { colors, darkMode } = useAppTheme();
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -57,11 +59,17 @@ function CourseCard({ item }: { item: Curso }) {
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         onPress={() => router.push("/periodSelectionScreen")}
-        style={styles.card}
+        style={[
+          styles.card,
+          {
+            backgroundColor: darkMode ? colors.surface : "#ffffff",
+            borderColor: colors.border,
+          },
+        ]}
       >
-        <Text style={styles.cardTitle}>{item.nome}</Text>
-        <Text style={styles.cardSubtitle}>Período: {item.periodo}</Text>
-        <Text style={styles.cardSubtitle}>Tipo: {item.tipo}</Text>
+        <Text style={[styles.cardTitle, { color: colors.text }]}>{item.nome}</Text>
+        <Text style={[styles.cardSubtitle, { color: colors.textMuted }]}>Período: {item.periodo}</Text>
+        <Text style={[styles.cardSubtitle, { color: colors.textMuted }]}>Tipo: {item.tipo}</Text>
       </Pressable>
     </Animated.View>
   );
@@ -69,15 +77,20 @@ function CourseCard({ item }: { item: Curso }) {
 
 export default function ChooseCourse() {
   const [busca, setBusca] = useState('');
+  const { colors, darkMode } = useAppTheme();
+
+  const filteredCourses = CURSOS.filter((curso) =>
+    curso.nome.toLowerCase().includes(busca.toLowerCase()) ||
+    curso.periodo.toLowerCase().includes(busca.toLowerCase())
+  );
 
   const renderItem: ListRenderItem<Curso> = ({ item }) => (
     <CourseCard item={item} />
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
-        
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <View>
           <Button
             className="btn w-fit justify-center align-center"
@@ -87,20 +100,28 @@ export default function ChooseCourse() {
           >
             <View className="flex-row gap-1 items-center">
               <LucideChevronLeft size={16} />
-              <Text className="text-primary m-0">Voltar</Text>
+              <Text style={{ color: colors.text }} className="m-0">Voltar</Text>
             </View>
           </Button>
         </View>
 
-        <Text style={styles.title}>Escolha seu curso</Text>
+        <Text style={[styles.title, { color: colors.text }]}>Escolha seu curso</Text>
 
-        <View style={styles.searchContainer}>
-          <Feather name="search" size={20} color="#333" />
-          <View style={styles.separator} />
+        <View
+          style={[
+            styles.searchContainer,
+            {
+              backgroundColor: darkMode ? colors.surface : "#ffffff",
+              borderColor: colors.border,
+            },
+          ]}
+        >
+          <Feather name="search" size={20} color={colors.textMuted} />
+          <View style={[styles.separator, { backgroundColor: colors.border }]} />
           <TextInput
-            style={[styles.searchInput, { outlineStyle: 'none' } as any]} 
+            style={[styles.searchInput, { color: colors.text, outlineStyle: 'none' } as any]}
             placeholder="Buscar"
-            placeholderTextColor="#999999"
+            placeholderTextColor={colors.textMuted}
             value={busca}
             onChangeText={setBusca}
             underlineColorAndroid="transparent"
@@ -108,26 +129,24 @@ export default function ChooseCourse() {
         </View>
 
         <FlatList
-          data={CURSOS}
+          data={filteredCourses}
           keyExtractor={(item) => item.id}
           renderItem={renderItem}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.listContainer}
         />
-        
       </View>
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    backgroundColor: "#fff",
   },
   title: {
     fontSize: 24,
@@ -135,13 +154,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
     marginBottom: 30,
-    color: "#000",
   },
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#E5E5E5",
     borderRadius: 8,
     paddingHorizontal: 12,
     height: 50,
@@ -150,36 +167,30 @@ const styles = StyleSheet.create({
   separator: {
     width: 1,
     height: 20,
-    backgroundColor: "#E5E5E5",
     marginHorizontal: 10,
   },
   searchInput: {
     flex: 1,
     fontSize: 16,
-    color: "#333",
   },
   listContainer: {
     paddingBottom: 20,
   },
   cardWrapper: {
-    marginBottom: 12, 
+    marginBottom: 12,
   },
   card: {
     borderWidth: 1,
-    borderColor: "#E5E5E5",
     borderRadius: 8,
     padding: 16,
-    backgroundColor: "#fff",
   },
   cardTitle: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#000",
     marginBottom: 8,
   },
   cardSubtitle: {
     fontSize: 13,
-    color: "#666",
     marginBottom: 4,
   },
 });

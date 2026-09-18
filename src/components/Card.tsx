@@ -1,14 +1,65 @@
-import { View } from "react-native";
+import { View, type ViewProps } from "react-native";
 
-interface CardProps {
+import { useAppTheme } from "../theme/ThemeContext";
+
+interface CardProps extends ViewProps {
   children: React.ReactNode;
   className?: string;
+  backgroundColor?: string;
+  borderColor?: string;
+  borderPosition?: "all" | "top" | "bottom" | "middle";
 }
 
-export function Card({ children, className }: CardProps) {
+const borderPositionStyles = {
+  all: {
+    borderWidth: 1,
+    borderRadius: 12,
+  },
+  top: {
+    borderWidth: 1,
+    borderBottomWidth: 0.2,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  bottom: {
+    borderWidth: 1,
+    borderBottomWidth: 0.2,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+  middle: {
+    borderWidth: 1,
+    borderBottomWidth: 0.2,
+    borderRadius: 0,
+  },
+} as const;
+
+export function Card({
+  children,
+  className,
+  backgroundColor,
+  borderColor,
+  borderPosition = "all",
+  style,
+  ...props
+}: CardProps) {
+  const { colors } = useAppTheme();
+
   return (
     <View
-      className={`bg-white rounded-xl border border-border p-4 ${className ?? ""}`}
+      {...props}
+      style={[
+        { backgroundColor: colors.surface },
+        backgroundColor ? { backgroundColor } : null,
+        borderColor ? { borderColor } : null,
+        borderPositionStyles[borderPosition],
+        style,
+      ]}
+      className={`rounded-xl p-4 ${className ?? ""}`}
     >
       {children}
     </View>
