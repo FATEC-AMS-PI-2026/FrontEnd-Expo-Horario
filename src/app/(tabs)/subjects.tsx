@@ -1,7 +1,18 @@
 import { Button, ScheduleItem, Text } from "@/components";
-import { ChevronDown, ChevronLeft, ChevronRight, Ellipsis, Plus, Trash, X } from "lucide-react-native";
+import {
+  AlertTriangle,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  Ellipsis,
+  Plus,
+  RefreshCw,
+  Trash,
+  X,
+} from "lucide-react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Animated,
   Dimensions,
   Easing,
@@ -288,6 +299,63 @@ const LESSONS = [1, 2, 3, 4, 5, 6];
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const SORTABLE_ITEM_HEIGHT = 64;
 
+export const ERROR_MESSAGES: Record<string | number, string> = {
+  400: "Requisição inválida. Verifique os dados fornecidos e tente novamente.",
+  401: "Sua sessão expirou. Faça login novamente para acessar seus horários.",
+  403: "Você não tem permissão para acessar esta grade de aulas.",
+  404: "Parece que houve algum erro, seus dados não foram encontrados em nossos servidores. Entre em contato com o suporte para mais informações.",
+  408: "A conexão demorou muito a responder. Verifique sua internet.",
+  500: "Ocorreu um erro interno em nossos servidores. Nossa equipe já foi notificada.",
+  502: "Serviço temporariamente indisponível. Tente novamente em alguns minutos.",
+  503: "Serviço em manutenção programada. Voltaremos em breve.",
+  NETWORK_ERROR: "Sem conexão com a internet. Verifique seu Wi-Fi ou dados móveis.",
+  UNKNOWN: "Ocorreu um erro inesperado ao carregar suas aulas. Tente novamente.",
+};
+
+export const getErrorMessage = (code?: string | number): string => {
+  if (!code) return ERROR_MESSAGES.UNKNOWN;
+  return ERROR_MESSAGES[code] || ERROR_MESSAGES.UNKNOWN;
+};
+
+interface ErrorStateProps {
+  errorCode: string | number;
+  onRetry: () => void;
+}
+
+export function ErrorState({ errorCode, onRetry }: ErrorStateProps) {
+  const message = getErrorMessage(errorCode);
+
+  return (
+    <View className="flex-1 items-center justify-center bg-white p-6">
+      <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-red-100">
+        <AlertTriangle size={32} color="#DC2626" />
+      </View>
+
+      <Text variant="subheading" className="mb-2 text-center text-gray-900 font-bold">
+        Ops! Algo deu errado
+      </Text>
+
+      <Text variant="body" className="mb-3 text-center text-gray-600">
+        {message}
+      </Text>
+
+      <View className="mb-6 rounded-md bg-gray-100 px-3 py-1">
+        <Text variant="caption" className="font-mono text-gray-500">
+          Código de erro: {errorCode}
+        </Text>
+      </View>
+
+      <Pressable
+        onPress={onRetry}
+        className="flex-row items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 active:opacity-80"
+      >
+        <RefreshCw size={18} color="#FFF" />
+        <Text className="font-medium text-white">Tentar novamente</Text>
+      </Pressable>
+    </View>
+  );
+}
+
 interface ScheduleRow {
   id: string;
   item: ScheduleEntry;
@@ -360,11 +428,50 @@ export default function Subjects() {
   const [isSubjectPickerOpen, setIsSubjectPickerOpen] = useState(false);
   const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
   const [selectionActionsAnchorIndex, setSelectionActionsAnchorIndex] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [errorCode, setErrorCode] = useState<string | number | null>(null);
   const dayTransitionX = useRef(new Animated.Value(0)).current;
   const swipeX = useRef(new Animated.Value(0)).current;
   const translateX = useRef(Animated.add(dayTransitionX, swipeX)).current;
   const isDayTransitioning = useRef(false);
   const activeDayRef = useRef(activeDay);
+
+  const fetchScheduleData = useCallback(async () => {
+    setIsLoading(true);
+    setErrorCode(null);
+
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 600));
+
+      {/* Use a função abaixo para simular um erro*/}
+      /*
+      const simulatedError: number | null = 500;
+      if (simulatedError) {
+        setErrorCode(simulatedError);
+        return;
+      }
+      */
+
+      setSchedule(SCHEDULE_DATA);
+    } catch (error: unknown) {
+      const status =
+        typeof error === "object" && error !== null && "response" in error
+          ? (error as { response?: { status?: string | number } }).response?.status
+          : undefined;
+      setErrorCode(
+        status ??
+          (typeof error === "object" && error !== null && "message" in error
+            ? String((error as { message?: string }).message)
+            : "NETWORK_ERROR"),
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchScheduleData();
+  }, [fetchScheduleData]);
 
   const visibleItems = schedule
     .map((item, index) => ({ item, index }))
@@ -625,6 +732,18 @@ const daySwipeResponder = useRef(
       </View>
     );
   };
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-white">
+        <ActivityIndicator size="large" color="#00695C" />
+      </View>
+    );
+  }
+
+  if (errorCode !== null) {
+    return <ErrorState errorCode={errorCode} onRetry={fetchScheduleData} />;
+  }
 
   return (
     <View className="flex-1 bg-white pt-4">
