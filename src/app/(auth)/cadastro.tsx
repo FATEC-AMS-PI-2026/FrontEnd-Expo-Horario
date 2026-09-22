@@ -2,12 +2,14 @@ import { useRouter } from 'expo-router';
 import { LucideChevronLeft } from 'lucide-react-native';
 import { useState, } from 'react';
 import {
-    View,
+  View,
 } from 'react-native';
 import { Button, Input, Text } from '../../components';
+import { useAppTheme } from '../../theme/ThemeContext';
 
 export default function CadastroScreen() {
   const router = useRouter();
+  const { colors } = useAppTheme();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
@@ -34,7 +36,7 @@ export default function CadastroScreen() {
 
   return (
 
-        <View className="flex-1 bg-white items-center">
+        <View className="flex-1 items-center" style={{ backgroundColor: colors.background }}>
           <View className="w-full max-w-[400px]">
             <View className="mt-5 mx-5">
               <Button

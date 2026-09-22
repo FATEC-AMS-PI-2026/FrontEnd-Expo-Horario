@@ -9,21 +9,31 @@ import {
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { useAppTheme } from "../../theme/ThemeContext";
+
 export default function MainLayout() {
+  const { colors, darkMode } = useAppTheme();
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
           headerShown: false,
 
-          tabBarActiveTintColor: "#FFFFFF",
-          tabBarInactiveTintColor: "#B0BEC5",
+        tabBarActiveTintColor: darkMode ? colors.text : "#FFFFFF",
+        tabBarInactiveTintColor: darkMode ? "#94a3b8" : "#B0BEC5",
 
-          tabBarStyle: styles.tabBar,
+        tabBarStyle: {
+          ...styles.tabBar,
+          backgroundColor: darkMode ? colors.surface : "#004B57",
+        },
 
-          tabBarLabelStyle: styles.tabBarLabel,
-        }}
-      >
+        tabBarLabelStyle: {
+          ...styles.tabBarLabel,
+          color: darkMode ? colors.text : "#FFFFFF",
+        },
+      }}
+    >
       <Tabs.Screen
         name="home"
         options={{

@@ -1,10 +1,14 @@
+import { router } from "expo-router";
 import { Image, StyleSheet, View } from "react-native";
 import { Button, Text } from "../../components";
-import { router } from "expo-router";
+
+import { useAppTheme } from "../../theme/ThemeContext";
 
 export default function Index() {
+  const { colors } = useAppTheme();
+
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}> 
       <View style={styles.containerImage}>
         <Image
           source={require("../../../assets/images/cpsWelcome.png")}
@@ -52,7 +56,6 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#FFFFFF",
   },
   containerImage: {
     width: "100%",

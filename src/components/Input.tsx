@@ -1,5 +1,7 @@
 import { ReactNode, useState } from "react";
-import { TextInput, TextInputProps, View, Text } from "react-native";
+import { Text, TextInput, TextInputProps, View } from "react-native";
+
+import { useAppTheme } from "../theme/ThemeContext";
 
 interface InputProps extends TextInputProps {
   label?: string;
@@ -20,21 +22,34 @@ export function Input({
   ...props
 }: InputProps) {
   const [focused, setFocused] = useState(false);
+  const { colors, darkMode } = useAppTheme();
 
   return (
     <View className="gap-1.5">
       {label && (
-        <Text className="text-sm font-medium text-gray-400">{label}</Text>
+        <Text style={{ color: colors.textMuted }} className="text-sm font-medium">
+          {label}
+        </Text>
       )}
       <View
-        className={`flex-row transition items-center bg-white border outline-none rounded-xl ${
-          focused ? "border-ring ring-2 ring-ring/30" : "border-border"
-        } ${error ? "border-error" : ""}`}
+        style={{
+            backgroundColor: darkMode ? colors.backgroundAlt : colors.background,
+          borderColor: focused ? colors.accent : colors.border,
+          borderWidth: 1,
+          borderRadius: 12,
+        }}
+        className="flex-row transition items-center outline-none"
       >
         {leftIcon && <View className="pl-3">{leftIcon}</View>}
         <TextInput
-          placeholderTextColor="#71717a"
-          className={`focus:outline-none flex-1 px-3 py-3.5 text-base text-foreground ${className ?? ""}`}
+          placeholderTextColor={colors.textMuted}
+          style={{
+            color: colors.text,
+            flex: 1,
+            paddingHorizontal: 12,
+            paddingVertical: 14,
+          }}
+          className={className ?? ""}
           onFocus={(e) => {
             setFocused(true);
             onFocus?.(e);
@@ -47,7 +62,7 @@ export function Input({
         />
         {rightIcon && <View className="pr-3">{rightIcon}</View>}
       </View>
-      {error && <Text className="text-xs text-error">{error}</Text>}
+      {error && <Text style={{ color: colors.danger }}>{error}</Text>}
     </View>
   );
 }

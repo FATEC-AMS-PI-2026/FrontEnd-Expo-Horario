@@ -2,7 +2,7 @@ import {
   ActivityIndicator,
   Pressable,
   PressableProps,
-  Text,
+  Text as RNText,
 } from "react-native";
 import Animated, {
   useAnimatedStyle,
@@ -10,8 +10,9 @@ import Animated, {
   withSpring,
 } from "react-native-reanimated";
 
-type Variant = "primary" | "secondary" | "outline" | "ghost" | "destructive";
+import { useAppTheme } from "../theme/ThemeContext";
 
+type Variant = "primary" | "secondary" | "outline" | "ghost" | "destructive";
 type Size = "xs" | "sm" | "md" | "lg";
 
 interface ButtonProps extends PressableProps {
@@ -22,27 +23,11 @@ interface ButtonProps extends PressableProps {
   className?: string;
 }
 
-const variantClasses: Record<Variant, string> = {
-  primary: "bg-primary active:bg-primary-dark",
-  secondary: "bg-foreground transition active:bg-gray-200",
-  outline: "border border-1.5 border-primary bg-transparent active:bg-muted",
-  ghost: "bg-transparent transition active:bg-muted",
-  destructive: "bg-error transition active:bg-red-700",
-};
-
-const sizeClasses: Record<Size, string> = {
-  xs: "px-3 py-1.0 rounded-[10px]",
-  sm: "px-3 py-1.5 rounded-sm",
-  md: "px-4 py-3.5 rounded-[10px]",
-  lg: "px-6 py-5.5 rounded-[21px]",
-};
-
-const textClasses: Record<Variant, string> = {
-  primary: "text-white font-[Poppins-Regular]",
-  secondary: "text-primary font-[Poppins-Regular]",
-  outline: "text-primary font-[Poppins-Regular]",
-  ghost: "text-foreground font-[Poppins-Regular]",
-  destructive: "text-white font-[Poppins-Regular]",
+const sizeStyles: Record<Size, { paddingHorizontal: number; paddingVertical: number; borderRadius: number }> = {
+  xs: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 10 },
+  sm: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 4 },
+  md: { paddingHorizontal: 16, paddingVertical: 14, borderRadius: 10 },
+  lg: { paddingHorizontal: 24, paddingVertical: 22, borderRadius: 21 },
 };
 
 export function Button({
@@ -51,9 +36,10 @@ export function Button({
   loading,
   disabled,
   children,
-  className,
+  style,
   ...props
 }: ButtonProps) {
+  const { colors } = useAppTheme();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -68,21 +54,63 @@ export function Button({
     scale.value = withSpring(1, { damping: 80, stiffness: 500 });
   };
 
+  const getVariantStyles = (): { container: Record<string, unknown>; text: Record<string, unknown> } => {
+    switch (variant) {
+      case "primary":
+        return {
+          container: { backgroundColor: colors.accent },
+          text: { color: "#ffffff" },
+        };
+      case "secondary":
+        return {
+          container: { backgroundColor: colors.surfaceAlt },
+          text: { color: colors.accent },
+        };
+      case "outline":
+        return {
+          container: {
+            backgroundColor: "transparent",
+            borderWidth: 1.5,
+            borderColor: colors.accent,
+          },
+          text: { color: colors.accent },
+        };
+      case "ghost":
+        return {
+          container: { backgroundColor: "transparent" },
+          text: { color: colors.text },
+        };
+      case "destructive":
+        return {
+          container: { backgroundColor: colors.danger },
+          text: { color: "#ffffff" },
+        };
+    }
+  };
+
+  const variantStyles = getVariantStyles();
+
   return (
     <Animated.View style={animatedStyle}>
       <Pressable
         disabled={disabled || loading}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
-        className={`${variantClasses[variant]} ${sizeClasses[size]} transition items-center justify-center ${
-          disabled ? "opacity-50" : ""
-        } ${className ?? ""}`}
+        style={[
+          sizeStyles[size],
+          variantStyles.container,
+          { alignItems: "center", justifyContent: "center" },
+          disabled ? { opacity: 0.5 } : null,
+          typeof style === "function" ? undefined : style,
+        ]}
         {...props}
       >
         {loading ? (
-          <ActivityIndicator color={variant === "ghost" || variant === "outline" ? undefined : "#fff"} />
+          <ActivityIndicator color={variantStyles.text.color as string} />
         ) : (
-          <Text className={textClasses[variant]}>{children}</Text>
+          <RNText style={[{ fontFamily: "Poppins-Regular" }, variantStyles.text]}>
+            {children}
+          </RNText>
         )}
       </Pressable>
     </Animated.View>

@@ -2,6 +2,7 @@ import { Ellipsis, User } from "lucide-react-native";
 import { Pressable, View } from "react-native";
 import { Button } from "./Button";
 import { Text } from "./Text";
+import { useAppTheme } from "../theme/ThemeContext";
 
 interface ScheduleItemProps {
   startTime: string;
@@ -23,32 +24,23 @@ export function ScheduleItem({
   subject,
   teacher,
   location,
-  accentColor = "#0B6878",
-  onMorePress,
-  isEmpty = false,
-  isSelected = false,
-  onPress,
-  onLongPress,
+  accentColor,
 }: ScheduleItemProps) {
+  const { colors } = useAppTheme();
+  const accent = accentColor ?? colors.accent;
+
   return (
-    <Pressable
-      onPress={onPress}
-      onLongPress={onLongPress}
-      delayLongPress={500}
-      className={`flex-row items-center bg-white rounded-xl px-3 py-2 overflow-hidden ${
-        isSelected ? "border-2 border-blue-500" : ""
-      }`}
-    >
+    <View className="flex-row items-center rounded-xl px-3 py-3 mb-1 overflow-hidden" style={{ backgroundColor: colors.surface }}>
       <View
-        className="w-1.5 h-10 rounded-full mr-3 shrink-0"
-        style={{ backgroundColor: accentColor }}
+        className="w-1.5 h-14 rounded-full mr-3 shrink-0"
+        style={{ backgroundColor: accent }}
       />
 
       <View className="w-[58px] shrink-0 mr-1">
-        <Text variant="caption" className="text-gray-600 leading-4">
+        <Text variant="caption" className="leading-4" style={{ color: colors.textMuted }}>
           {startTime}
         </Text>
-        <Text variant="caption" className="text-gray-600 mt-1.5 leading-4">
+        <Text variant="caption" className="mt-1.5 leading-4" style={{ color: colors.textMuted }}>
           {endTime}
         </Text>
       </View>
@@ -56,44 +48,36 @@ export function ScheduleItem({
       <View className="flex-1 min-w-0 pr-1">
         <Text
           variant="body"
-          className={isEmpty ? "text-gray-500 font-medium" : "text-black font-medium"}
-          numberOfLines={1}
+          className="font-medium"
+          style={{ color: colors.text }}
+          numberOfLines={2}
         >
           {isEmpty ? "Aula vazia" : subject}
         </Text>
 
-        {!isEmpty && (
-          <View className="flex-row items-center mt-0.5 gap-1">
-            <User size={18} color={accentColor} strokeWidth={2.2} />
-            <Text
-              variant="caption"
-              className="flex-1"
-              style={{ color: accentColor }}
-              numberOfLines={1}
-            >
-              {teacher}
-            </Text>
-            <Text
-              variant="body"
-              className="text-right"
-              style={{ color: accentColor }}
-              numberOfLines={1}
-            >
-              {location}
-            </Text>
-          </View>
-        )}
-          </View>
+        <View className="flex-row items-center mt-0.5 gap-1">
+          <User size={13} color={accent} strokeWidth={2.2} />
+          <Text
+            variant="caption"
+            className="flex-1"
+            style={{ color: accent }}
+            numberOfLines={1}
+          >
+            {teacher}
+          </Text>
+        </View>
+      </View>
 
-
-      <Button
-        variant="ghost"
-        size="xs"
-        className="w-8 h-8 ml-1"
-        onPress={onMorePress}
-      >
-        <Ellipsis size={22} color="#666" />
-      </Button>
-    </Pressable>
+      <View className="shrink-0 max-w-[72px] items-end">
+        <Text
+          variant="body"
+          className="text-right"
+          style={{ color: accent }}
+          numberOfLines={1}
+        >
+          {location}
+        </Text>
+      </View>
+    </View>
   );
 }

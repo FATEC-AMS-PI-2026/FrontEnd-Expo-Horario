@@ -1,5 +1,7 @@
 import { Switch as RNSwitch, SwitchProps as RNSwitchProps, View, Text } from "react-native";
 
+import { useAppTheme } from "../theme/ThemeContext";
+
 interface SwitchProps extends Omit<RNSwitchProps, "value" | "onValueChange"> {
   value: boolean;
   onValueChange: (val: boolean) => void;
@@ -7,12 +9,14 @@ interface SwitchProps extends Omit<RNSwitchProps, "value" | "onValueChange"> {
 }
 
 export function Switch({ value, onValueChange, label, ...props }: SwitchProps) {
+  const { colors } = useAppTheme();
+
   if (!label) {
     return (
       <RNSwitch
         value={value}
         onValueChange={onValueChange}
-        trackColor={{ false: "#e4e4e7", true: "#005C6E" }}
+        trackColor={{ false: colors.border, true: colors.accent }}
         {...props}
       />
     );
@@ -24,7 +28,7 @@ export function Switch({ value, onValueChange, label, ...props }: SwitchProps) {
       <RNSwitch
         value={value}
         onValueChange={onValueChange}
-        trackColor={{ false: "#e4e4e7", true: "#005C6E" }}
+        trackColor={{ false: colors.border, true: colors.accent }}
         {...props}
       />
     </View>
