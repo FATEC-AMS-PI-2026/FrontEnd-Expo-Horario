@@ -1,8 +1,7 @@
-import { Ellipsis, User } from "lucide-react-native";
-import { Pressable, View } from "react-native";
-import { Button } from "./Button";
-import { Text } from "./Text";
+import { User } from "lucide-react-native";
+import { View } from "react-native";
 import { useAppTheme } from "../theme/ThemeContext";
+import { Text } from "./Text";
 
 interface ScheduleItemProps {
   startTime: string;
@@ -24,13 +23,14 @@ export function ScheduleItem({
   subject,
   teacher,
   location,
+  isEmpty = false,
   accentColor,
 }: ScheduleItemProps) {
   const { colors } = useAppTheme();
   const accent = accentColor ?? colors.accent;
 
   return (
-    <View className="flex-row items-center rounded-xl px-3 py-3 mb-1 overflow-hidden" style={{ backgroundColor: colors.surface }}>
+    <View className="flex-row items-center rounded-xl px-3 py-3 mb-1 overflow-hidden" style={{ backgroundColor: colors.surfaceAlt }}>
       <View
         className="w-1.5 h-14 rounded-full mr-3 shrink-0"
         style={{ backgroundColor: accent }}
