@@ -1,15 +1,16 @@
-import { Feather } from '@expo/vector-icons';
+import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { LucideChevronLeft } from 'lucide-react-native';
-import { useState } from "react";
+import { LucideChevronLeft } from "lucide-react-native";
+import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   FlatList,
   ListRenderItem,
   Pressable,
   StyleSheet,
   Text,
   TextInput,
-  View
+  View,
 } from "react-native";
 
 import Animated, {
@@ -17,25 +18,29 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from "react-native-reanimated";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "../../components";
+import { API_URL } from "../../services/api";
 import { useAppTheme } from "../../theme/ThemeContext";
 
 interface Curso {
-  id: string;
+  id: number;
   nome: string;
-  periodo: string;
-  tipo: string;
+  periodicidade: string;
+  status: string;
+  duracao: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
-const CURSOS: Curso[] = [
-  { id: '1', nome: 'Analise e Desenvolvimento de Sistemas', periodo: 'Manhã', tipo: 'Tecnólogo' },
-  { id: '2', nome: 'Gestão de Processos Gerenciais', periodo: 'Manhã', tipo: 'Tecnólogo' },
-  { id: '3', nome: 'Analise e Desenvolvimento de Sistemas', periodo: 'Tarde (AMS)', tipo: 'Tecnólogo' },
-  { id: '4', nome: 'Mecatrônica Industrial', periodo: 'Noite', tipo: 'Tecnólogo' },
-  { id: '5', nome: 'Gestão de Eventos', periodo: 'Manhã', tipo: 'Tecnólogo' },
-  { id: '6', nome: 'Secretariado', periodo: 'Manhã', tipo: 'Tecnólogo' },
-];
+interface CursosResponse {
+  content: Curso[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
 
 function CourseCard({ item }: { item: Curso }) {
   const scale = useSharedValue(1);
@@ -46,51 +51,143 @@ function CourseCard({ item }: { item: Curso }) {
   }));
 
   const handlePressIn = () => {
-    scale.value = withSpring(0.95, { damping: 80, stiffness: 500 });
+    scale.value = withSpring(0.95, {
+      damping: 80,
+      stiffness: 500,
+    });
   };
 
   const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 80, stiffness: 500 });
+    scale.value = withSpring(1, {
+      damping: 80,
+      stiffness: 500,
+    });
   };
 
   return (
     <Animated.View style={[styles.cardWrapper, animatedStyle]}>
-      <Pressable
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        onPress={() => router.push("/periodSelectionScreen")}
-        style={[
-          styles.card,
-          {
-            backgroundColor: darkMode ? colors.surface : "#ffffff",
-            borderColor: colors.border,
-          },
-        ]}
-      >
-        <Text style={[styles.cardTitle, { color: colors.text }]}>{item.nome}</Text>
-        <Text style={[styles.cardSubtitle, { color: colors.textMuted }]}>Período: {item.periodo}</Text>
-        <Text style={[styles.cardSubtitle, { color: colors.textMuted }]}>Tipo: {item.tipo}</Text>
-      </Pressable>
+<Pressable
+  onPressIn={handlePressIn}
+  onPressOut={handlePressOut}
+  onPress={() =>
+    router.push({
+      pathname: "/periodSelectionScreen",
+      params: {
+        cursoId: item.id.toString(),
+        cursoNome: item.nome,
+      },
+    })
+  }
+  style={[
+    styles.card,
+    {
+      backgroundColor: darkMode
+        ? colors.surface
+        : "#ffffff",
+      borderColor: colors.border,
+    },
+  ]}
+>
+  <Text
+    style={[
+      styles.cardTitle,
+      { color: colors.text },
+    ]}
+  >
+    {item.nome}
+  </Text>
+
+  <Text
+    style={[
+      styles.cardSubtitle,
+      { color: colors.textMuted },
+    ]}
+  >
+    Periodicidade: {item.periodicidade}
+  </Text>
+
+  <Text
+    style={[
+      styles.cardSubtitle,
+      { color: colors.textMuted },
+    ]}
+  >
+    Duração: {item.duracao}
+  </Text>
+</Pressable>
     </Animated.View>
   );
 }
 
 export default function ChooseCourse() {
-  const [busca, setBusca] = useState('');
-  const { colors, darkMode } = useAppTheme();
+  const [busca, setBusca] = useState("");
+  const [cursos, setCursos] = useState<Curso[]>([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState("");
 
-  const filteredCourses = CURSOS.filter((curso) =>
-    curso.nome.toLowerCase().includes(busca.toLowerCase()) ||
-    curso.periodo.toLowerCase().includes(busca.toLowerCase())
+  const { colors } = useAppTheme();
+
+  useEffect(() => {
+    async function carregarCursos() {
+      try {
+        setCarregando(true);
+        setErro("");
+
+
+    const response = await fetch(`${API_URL}/cursos`);
+        if (!response.ok) {
+          throw new Error(
+            `Erro na requisição: ${response.status}`
+          );
+  }
+
+        const data: CursosResponse = await response.json();
+
+        setCursos(data.content);
+      } catch (error) {
+        console.error(
+          "Erro ao carregar cursos:",
+          error
+        );
+
+        setErro(
+          "Não foi possível carregar os cursos."
+        );
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    carregarCursos();
+  }, []);
+
+  const filteredCourses = cursos.filter(
+    (curso) =>
+      curso.nome
+        .toLowerCase()
+        .includes(busca.toLowerCase()) ||
+      curso.periodicidade
+        .toLowerCase()
+        .includes(busca.toLowerCase())
   );
 
-  const renderItem: ListRenderItem<Curso> = ({ item }) => (
-    <CourseCard item={item} />
-  );
+  const renderItem: ListRenderItem<Curso> = ({
+    item,
+  }) => <CourseCard item={item} />;
 
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        { backgroundColor: colors.background },
+      ]}
+    >
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: colors.background },
+        ]}
+      >
         <View>
           <Button
             className="btn w-26 justify-center align-center"
@@ -100,18 +197,40 @@ export default function ChooseCourse() {
           >
             <View className="flex-row gap-1 items-center">
               <LucideChevronLeft size={24} />
-              <Text className="text-primary m-0">Voltar</Text>
+
+              <Text className="text-primary m-0">
+                Voltar
+              </Text>
             </View>
           </Button>
         </View>
 
-        <Text style={[styles.title, { color: colors.text }]}>Escolha seu curso</Text>
+        <Text
+          style={[
+            styles.title,
+            { color: colors.text },
+          ]}
+        >
+          Escolha seu curso
+        </Text>
 
         <View style={styles.searchContainer}>
-          <Feather name="search" size={24} color="#333" />
+          <Feather
+            name="search"
+            size={24}
+            color={colors.text}
+          />
+
           <View style={styles.separator} />
+
           <TextInput
-            style={[styles.searchInput, { color: colors.text, outlineStyle: 'none' } as any]}
+            style={[
+              styles.searchInput,
+              {
+                color: colors.text,
+                outlineStyle: "none",
+              } as any,
+            ]}
             placeholder="Buscar"
             placeholderTextColor={colors.textMuted}
             value={busca}
@@ -120,13 +239,33 @@ export default function ChooseCourse() {
           />
         </View>
 
-        <FlatList
-          data={filteredCourses}
-          keyExtractor={(item) => item.id}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContainer}
-        />
+        {carregando ? (
+          <ActivityIndicator
+            size="large"
+            color={colors.text}
+          />
+        ) : erro ? (
+          <Text
+            style={{
+              color: colors.text,
+              textAlign: "center",
+            }}
+          >
+            {erro}
+          </Text>
+        ) : (
+          <FlatList
+            data={filteredCourses}
+            keyExtractor={(item) =>
+              item.id.toString()
+            }
+            renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={
+              styles.listContainer
+            }
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -136,10 +275,12 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
   },
+
   container: {
     flex: 1,
     paddingHorizontal: 20,
   },
+
   title: {
     fontSize: 24,
     fontWeight: "bold",
@@ -147,6 +288,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 30,
   },
+
   searchContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -156,31 +298,38 @@ const styles = StyleSheet.create({
     height: 50,
     marginBottom: 20,
   },
+
   separator: {
     width: 1,
     height: 20,
     marginHorizontal: 10,
   },
+
   searchInput: {
     flex: 1,
     fontSize: 16,
   },
+
   listContainer: {
     paddingBottom: 20,
   },
+
   cardWrapper: {
     marginBottom: 12,
   },
+
   card: {
     borderWidth: 1,
     borderRadius: 8,
     padding: 16,
   },
+
   cardTitle: {
     fontSize: 14,
     fontWeight: "bold",
     marginBottom: 8,
   },
+
   cardSubtitle: {
     fontSize: 13,
     marginBottom: 4,
