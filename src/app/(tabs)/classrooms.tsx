@@ -122,7 +122,6 @@ export default function Classrooms() {
       {status === "success" && (
         <View>
 
-const router = useRouter();
 
 <Pressable onPress={() => router.push("/classdetails/ClassDetails")}>
   <Card className="mt-5 w-full rounded-xl bg-background border-gray-300">
