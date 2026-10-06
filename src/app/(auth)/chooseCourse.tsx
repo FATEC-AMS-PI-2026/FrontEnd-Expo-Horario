@@ -128,7 +128,7 @@ export default function ChooseCourse() {
           contentContainerStyle={styles.listContainer}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 }
 
