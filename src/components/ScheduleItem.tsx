@@ -30,17 +30,29 @@ export function ScheduleItem({
   const accent = accentColor ?? colors.accent;
 
   return (
-    <View className="flex-row items-center rounded-xl px-3 py-3 mb-1 overflow-hidden" style={{ backgroundColor: colors.surfaceAlt }}>
+    <View
+      className="flex-row items-center rounded-xl px-3 py-3 mb-1 overflow-hidden"
+      style={{ backgroundColor: colors.surfaceAlt }}
+    >
       <View
         className="w-1.5 h-14 rounded-full mr-3 shrink-0"
         style={{ backgroundColor: accent }}
       />
 
       <View className="w-[58px] shrink-0 mr-1">
-        <Text variant="caption" className="leading-4" style={{ color: colors.textMuted }}>
+        <Text
+          variant="caption"
+          className="leading-4"
+          style={{ color: colors.textMuted }}
+        >
           {startTime}
         </Text>
-        <Text variant="caption" className="mt-1.5 leading-4" style={{ color: colors.textMuted }}>
+
+        <Text
+          variant="caption"
+          className="mt-1.5 leading-4"
+          style={{ color: colors.textMuted }}
+        >
           {endTime}
         </Text>
       </View>
@@ -55,17 +67,24 @@ export function ScheduleItem({
           {isEmpty ? "Aula vazia" : subject}
         </Text>
 
-        <View className="flex-row items-center mt-0.5 gap-1">
-          <User size={13} color={accent} strokeWidth={2.2} />
-          <Text
-            variant="caption"
-            className="flex-1"
-            style={{ color: accent }}
-            numberOfLines={1}
-          >
-            {teacher}
-          </Text>
-        </View>
+                {!isEmpty ? (
+          <View className="flex-row items-center mt-0.5 gap-1">
+            <User
+              size={13}
+              color={accent}
+              strokeWidth={2.2}
+            />
+
+            <Text
+              variant="caption"
+              className="flex-1"
+              style={{ color: accent }}
+              numberOfLines={1}
+            >
+              {teacher}
+            </Text>
+          </View>
+        ) : null}
       </View>
 
       <View className="shrink-0 max-w-[72px] items-end">

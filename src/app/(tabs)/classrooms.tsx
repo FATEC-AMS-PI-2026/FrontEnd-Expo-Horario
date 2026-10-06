@@ -1,7 +1,8 @@
-import { View, TextInput, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
-import { useState } from "react";
 import { Feather } from "@expo/vector-icons";
-import { FlaskConical, BookMarked, Inbox, AlertCircle } from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { AlertCircle, BookMarked, FlaskConical, Inbox } from "lucide-react-native";
+import { useState } from "react";
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
 import "../../../global.css";
 import {
   Button,
@@ -51,6 +52,7 @@ function StatusBadge({ isAvailable }: { isAvailable: boolean }) {
 
 export default function Classrooms() {
   const { colors, darkMode } = useAppTheme();
+  const router = useRouter();
   const [busca, setBusca] = useState("");
   const [status, setStatus] = useState<"loading" | "empty" | "error" | "success">("success");
 
@@ -120,40 +122,44 @@ export default function Classrooms() {
       {status === "success" && (
         <View>
 
-      <Card className="mt-5 w-full rounded-xl bg-background border-gray-300">
-        <CardHeader className="mb-1 w-full">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <FlaskConical size={20} color={colors.text} />
-              <Text
-                variant="subheading"
-                style={{ color: colors.text, fontWeight: "bold" }}
-              >
-                Lab 01
-              </Text>
-            </View>
-            <StatusBadge isAvailable={false} />
-          </View>
-        </CardHeader>
 
-        <CardContent
-          className="rounded-2xl p-2 w-full flex-1"
-          style={{
-            backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-          }}
-        >
-          <View className="w-full h-20">
-            <ScheduleItem
-              startTime="15:00h"
-              endTime="16:50h"
-              subject="Banco de Dados"
-              teacher="Renato"
-              location="Lab. 01"
-              accentColor="#067f95"
-            />
-          </View>
-        </CardContent>
-      </Card>
+<Pressable onPress={() => router.push("/classdetails/ClassDetails")}>
+  <Card className="mt-5 w-full rounded-xl bg-background border-gray-300">
+    <CardHeader className="mb-1 w-full">
+      <View className="flex-row items-center justify-between">
+        <View className="flex-row items-center gap-2">
+          <FlaskConical size={20} color={colors.text} />
+          <Text
+            variant="subheading"
+            style={{ color: colors.text, fontWeight: "bold" }}
+          >
+            Lab 01
+          </Text>
+        </View>
+
+        <StatusBadge isAvailable={false} />
+      </View>
+    </CardHeader>
+
+    <CardContent
+      className="rounded-2xl p-2 w-full flex-1"
+      style={{
+        backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
+      }}
+    >
+      <View className="w-full h-20">
+        <ScheduleItem
+          startTime="15:00h"
+          endTime="16:50h"
+          subject="Banco de Dados"
+          teacher="Renato"
+          location="Lab. 01"
+          accentColor="#067f95"
+        />
+      </View>
+    </CardContent>
+  </Card>
+</Pressable>
 
       <Card className="mt-5 w-full rounded-xl bg-background border-gray-300">
         <CardHeader className="mb-1 w-full">
