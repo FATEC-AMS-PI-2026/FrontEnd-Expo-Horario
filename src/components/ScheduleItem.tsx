@@ -1,5 +1,5 @@
-import { User } from "lucide-react-native";
-import { View } from "react-native";
+import { User, Ellipsis } from "lucide-react-native";
+import { View, Pressable } from "react-native";
 import { useAppTheme } from "../theme/ThemeContext";
 import { Text } from "./Text";
 
@@ -25,6 +25,7 @@ export function ScheduleItem({
   location,
   isEmpty = false,
   accentColor,
+  onMorePress,
 }: ScheduleItemProps) {
   const { colors } = useAppTheme();
   const accent = accentColor ?? colors.accent;
@@ -95,6 +96,12 @@ export function ScheduleItem({
         >
           {location}
         </Text>
+        <Pressable
+          onPress={onMorePress}
+          style={{ padding: 4 }}
+        >
+          <Ellipsis size={18} color={accent} />
+        </Pressable>
       </View>
     </View>
   );
