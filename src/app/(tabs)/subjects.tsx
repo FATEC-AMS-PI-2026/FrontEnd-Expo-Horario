@@ -24,6 +24,7 @@ import {
   View,
 } from "react-native";
 import { Sortable, SortableItem } from "react-native-reanimated-dnd";
+import { useAppTheme } from "../../theme/ThemeContext";
 
 const USE_NATIVE_DRIVER = Platform.OS !== "web";
 
@@ -323,34 +324,36 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({ errorCode, onRetry }: ErrorStateProps) {
+  const { colors } = useAppTheme();
   const message = getErrorMessage(errorCode);
 
   return (
-    <View className="flex-1 items-center justify-center bg-white p-6">
-      <View className="mb-4 h-16 w-16 items-center justify-center rounded-full bg-red-100">
-        <AlertTriangle size={32} color="#DC2626" />
+    <View className="flex-1 items-center justify-center p-6" style={{ backgroundColor: colors.background }}>
+      <View className="mb-4 h-16 w-16 items-center justify-center rounded-full" style={{ backgroundColor: colors.dangerSoft }}>
+        <AlertTriangle size={32} color={colors.danger} />
       </View>
 
-      <Text variant="subheading" className="mb-2 text-center text-gray-900 font-bold">
+      <Text variant="subheading" className="mb-2 text-center font-bold">
         Ops! Algo deu errado
       </Text>
 
-      <Text variant="body" className="mb-3 text-center text-gray-600">
+      <Text variant="body" className="mb-3 text-center" style={{ color: colors.textMuted }}>
         {message}
       </Text>
 
-      <View className="mb-6 rounded-md bg-gray-100 px-3 py-1">
-        <Text variant="caption" className="font-mono text-gray-500">
+      <View className="mb-6 rounded-md px-3 py-1" style={{ backgroundColor: colors.surfaceAlt }}>
+        <Text variant="caption" className="font-mono" style={{ color: colors.textMuted }}>
           Código de erro: {errorCode}
         </Text>
       </View>
 
       <Pressable
         onPress={onRetry}
-        className="flex-row items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 active:opacity-80"
+        className="flex-row items-center justify-center gap-2 rounded-lg px-6 py-3 active:opacity-80"
+        style={{ backgroundColor: colors.accent }}
       >
-        <RefreshCw size={18} color="#FFF" />
-        <Text className="font-medium text-white">Tentar novamente</Text>
+        <RefreshCw size={18} color={colors.background} />
+        <Text className="font-medium" style={{ color: colors.background }}>Tentar novamente</Text>
       </Pressable>
     </View>
   );
@@ -375,6 +378,7 @@ function SelectionActions({
   onCancel,
   onHidden,
 }: SelectionActionsProps) {
+  const { colors } = useAppTheme();
   const progress = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -392,31 +396,35 @@ function SelectionActions({
     <Animated.View
       pointerEvents={isVisible ? "auto" : "none"}
       style={{
+        backgroundColor: colors.background,
         opacity: progress,
         transform: [
           { translateY: progress.interpolate({ inputRange: [0, 1], outputRange: [-12, 0] }) },
           { scale: progress.interpolate({ inputRange: [0, 1], outputRange: [0.94, 1] }) },
         ],
       }}
-      className="mb-2 flex-row items-center justify-between rounded-xl bg-white py-2"
+      className="mb-2 flex-row items-center justify-between rounded-xl py-2"
     >
       <Pressable
-        className="items-center justify-center rounded-full bg-gray-100 py-2 px-3"
+        className="items-center justify-center rounded-full py-2 px-3"
+        style={{ backgroundColor: colors.surfaceAlt }}
         onPress={onCancel}
       >
-        <Text variant="body" className="text-gray-700">Cancelar</Text>
+        <Text variant="body">Cancelar</Text>
       </Pressable>
       <Pressable
-        className="rounded-lg bg-red-500 px-3 py-2"
+        className="rounded-lg px-3 py-2"
+        style={{ backgroundColor: colors.danger }}
         onPress={onRemove}
       >
-        <Trash size={24} color="#fff" />
+        <Trash size={24} color={colors.background} />
       </Pressable>
     </Animated.View>
   );
 }
 
 export default function Subjects() {
+  const { colors, darkMode } = useAppTheme();
   const [schedule, setSchedule] = useState(SCHEDULE_DATA);
   const [activeDay, setActiveDay] = useState(1);
   const [menuItemIndex, setMenuItemIndex] = useState<number | null>(null);
@@ -691,17 +699,17 @@ const daySwipeResponder = useRef(
           />
         )}
         {item.isInterval ? (
-          <View className="flex-row items-center bg-[#E0F7FA] rounded-xl px-3 py-2 overflow-hidden">
+          <View className="flex-row items-center rounded-xl px-3 py-2 overflow-hidden" style={{ backgroundColor: colors.accentSoft }}>
             <View className="w-[58px] shrink-0 mr-1">
-              <Text variant="caption" className="text-gray-600 leading-4">
+              <Text variant="caption" className="leading-4" style={{ color: colors.textMuted }}>
                 {item.startTime}
               </Text>
-              <Text variant="caption" className="text-gray-600 mt-1.5 leading-4">
+              <Text variant="caption" className="mt-1.5 leading-4" style={{ color: colors.textMuted }}>
                 {item.endTime}
               </Text>
             </View>
             <View className="flex-1 min-w-0 pr-1">
-              <Text variant="body" className="text-black font-medium">
+              <Text variant="body" className="font-medium">
                 {item.subject}
               </Text>
             </View>
@@ -711,7 +719,7 @@ const daySwipeResponder = useRef(
               className="w-8 h-8"
               onPress={() => setMenuItemIndex(sourceIndex)}
             >
-              <Ellipsis size={22} color="#666" />
+              <Ellipsis size={22} color={colors.textMuted} />
             </Button>
           </View>
         ) : (
@@ -721,7 +729,7 @@ const daySwipeResponder = useRef(
             subject={item.subject}
             teacher={item.teacher}
             location={item.location}
-            accentColor={item.accentColor}
+            accentColor={item.isEmpty ? colors.border : darkMode ? colors.accent : item.accentColor}
             isEmpty={item.isEmpty}
             isSelected={selectedIndices.includes(sourceIndex)}
             onPress={() => isSelectionMode && toggleSelection(sourceIndex)}
@@ -735,8 +743,8 @@ const daySwipeResponder = useRef(
 
   if (isLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#00695C" />
+      <View className="flex-1 items-center justify-center" style={{ backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.accent} />
       </View>
     );
   }
@@ -746,20 +754,22 @@ const daySwipeResponder = useRef(
   }
 
   return (
-    <View className="flex-1 bg-white pt-4">
+    <View className="flex-1 pt-4" style={{ backgroundColor: colors.background }}>
 
       <View className="flex-row p-1 px-3 gap-1 w-full">
         {DAYS.map((day, index) => (
           <Pressable
             key={index}
             onPress={() => changeDay(index)}
-            className={`flex-1 p-2 px-4 border border-border rounded-md items-center ${
-              index === activeDay ? "bg-primary" : ""
-            }`}
+            className="flex-1 p-2 px-4 border rounded-md items-center"
+            style={{
+              borderColor: colors.border,
+              backgroundColor: index === activeDay ? colors.accent : colors.surface,
+            }}
           >
             <Text
               variant="label"
-              className={index === activeDay ? "text-text-inverse" : ""}
+              style={{ color: index === activeDay ? colors.background : colors.text }}
             >
               {day}
             </Text>
@@ -768,16 +778,17 @@ const daySwipeResponder = useRef(
       </View>
 
       <View className="flex-row items-center justify-between px-4 pt-4 pb-3">
-        <Text variant="heading" className="text-black">
+        <Text variant="heading">
           {DAY_NAMES[activeDay]}
         </Text>
         <Button
           variant="ghost"
           size="xs"
-          className="w-8 h-8 rounded-full bg-gray-100"
+          className="w-8 h-8 rounded-full"
+          style={{ backgroundColor: colors.surfaceAlt }}
           onPress={openAddSheet}
         >
-          <Plus color="#000" />
+          <Plus color={colors.text} />
         </Button>
       </View>
 
@@ -789,7 +800,7 @@ const daySwipeResponder = useRef(
         <Sortable
           data={visibleRows}
           itemHeight={SORTABLE_ITEM_HEIGHT}
-          style={{ flex: 1 }}
+          style={{ flex: 1, backgroundColor: colors.background }}
           contentContainerStyle={{ paddingHorizontal: 16 }}
           renderItem={({ item: row, id, ...sortableProps }) => (
             <SortableItem
@@ -806,20 +817,20 @@ const daySwipeResponder = useRef(
       </Animated.View>
 
       <View className="flex-row items-center justify-between px-6 py-4">
-        <Button variant="ghost" size="xs" className="w-10 h-10 rounded-full bg-gray-100">
-          <ChevronLeft size={24} color="#666" />
+        <Button variant="ghost" size="xs" className="w-10 h-10 rounded-full" style={{ backgroundColor: colors.surfaceAlt }}>
+          <ChevronLeft size={24} color={colors.textMuted} />
         </Button>
         <View className="flex-row gap-1.5">
-          <View className="w-2 h-2 rounded-full bg-primary" />
-          <View className="w-2 h-2 rounded-full bg-gray-300" />
-          <View className="w-2 h-2 rounded-full bg-gray-300" />
-          <View className="w-2 h-2 rounded-full bg-gray-300" />
-          <View className="w-2 h-2 rounded-full bg-gray-300" />
-          <View className="w-2 h-2 rounded-full bg-gray-300" />
-          <View className="w-2 h-2 rounded-full bg-gray-300" />
+          <View className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.accent }} />
+          <View className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.border }} />
+          <View className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.border }} />
+          <View className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.border }} />
+          <View className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.border }} />
+          <View className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.border }} />
+          <View className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.border }} />
         </View>
-        <Button variant="ghost" size="xs" className="w-10 h-10 rounded-full bg-gray-100">
-          <ChevronRight size={24} color="#666" />
+        <Button variant="ghost" size="xs" className="w-10 h-10 rounded-full" style={{ backgroundColor: colors.surfaceAlt }}>
+          <ChevronRight size={24} color={colors.textMuted} />
         </Button>
       </View>
 
@@ -833,10 +844,10 @@ const daySwipeResponder = useRef(
           className="flex-1 justify-end bg-black/30"
           onPress={() => setMenuItemIndex(null)}
         >
-          <Pressable className="bg-white rounded-t-3xl px-5 pt-3 pb-8" onPress={() => {}}>
-            <View className="self-center w-10 h-1 rounded-full bg-gray-300 mb-5" />
+          <Pressable className="rounded-t-3xl px-5 pt-3 pb-8" style={{ backgroundColor: colors.surface }} onPress={() => {}}>
+            <View className="self-center w-10 h-1 rounded-full mb-5" style={{ backgroundColor: colors.border }} />
             <Text variant="subheading" className="mb-2">Opções da aula</Text>
-            <Pressable className="py-4 border-b border-gray-100" onPress={openEditSheet}>
+            <Pressable className="py-4 border-b" style={{ borderColor: colors.border }} onPress={openEditSheet}>
               <Text variant="body">Editar</Text>
             </Pressable>
             <Pressable
@@ -845,7 +856,7 @@ const daySwipeResponder = useRef(
             >
               <Text
                 variant="body"
-                className={isSelectedItemEmpty ? "text-primary" : "text-red-600"}
+                style={{ color: isSelectedItemEmpty ? colors.accent : colors.danger }}
               >
                 {isSelectedItemEmpty ? "Adicionar aula" : "Excluir"}
               </Text>
@@ -865,7 +876,8 @@ const daySwipeResponder = useRef(
           onPress={() => setIsAddSheetOpen(false)}
         >
           <Pressable
-            className="bg-white rounded-t-3xl px-3 pt-4 pb-8"
+            className="rounded-t-3xl px-3 pt-4 pb-8"
+            style={{ backgroundColor: colors.surface }}
             onPress={() => {}}
           >
             <View className="flex-row items-center justify-between mb-5">
@@ -874,35 +886,38 @@ const daySwipeResponder = useRef(
                 {editingItemIndex === null ? "Adicionar Matéria" : "Editar Matéria"}
               </Text>
               <Pressable
-                className="w-10 h-10 items-center justify-center rounded-full bg-gray-100"
+                className="w-10 h-10 items-center justify-center rounded-full"
+                style={{ backgroundColor: colors.surfaceAlt }}
                 onPress={() => setIsAddSheetOpen(false)}
                 accessibilityLabel="Fechar"
               >
-                <X size={22} color="#111" />
+                <X size={22} color={colors.text} />
               </Pressable>
             </View>
 
             <Text variant="caption" className="mb-1">selecione uma matéria</Text>
             <View className="relative z-10">
               <Pressable
-                className="h-11 border border-gray-200 rounded-lg px-3 flex-row items-center justify-between"
+                className="h-11 border rounded-lg px-3 flex-row items-center justify-between"
+                style={{ backgroundColor: colors.surface, borderColor: colors.border }}
                 onPress={() => setIsSubjectPickerOpen((open) => !open)}
               >
-                <Text variant="caption" className="text-black">{selectedSubject}</Text>
-                <ChevronDown size={22} color="#111" />
+                <Text variant="caption">{selectedSubject}</Text>
+                <ChevronDown size={22} color={colors.text} />
               </Pressable>
               {isSubjectPickerOpen && (
-                <View className="absolute top-12 left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg">
+                <View className="absolute top-12 left-0 right-0 border rounded-lg shadow-lg" style={{ backgroundColor: colors.surface, borderColor: colors.border }}>
                   {SUBJECTS.map((subject) => (
                     <Pressable
                       key={subject}
-                      className="px-3 py-3 border-b border-gray-100"
+                      className="px-3 py-3 border-b"
+                      style={{ borderColor: colors.border }}
                       onPress={() => {
                         setSelectedSubject(subject);
                         setIsSubjectPickerOpen(false);
                       }}
                     >
-                      <Text variant="caption" className="text-black">{subject}</Text>
+                      <Text variant="caption">{subject}</Text>
                     </Pressable>
                   ))}
                 </View>
@@ -915,11 +930,13 @@ const daySwipeResponder = useRef(
                 <Pressable
                   key={index}
                   onPress={() => setSelectedDay(index)}
-                  className={`flex-1 h-11 rounded-lg border items-center justify-center ${
-                    selectedDay === index ? "bg-green-200 border-green-600" : "border-gray-200"
-                  }`}
+                  className="flex-1 h-11 rounded-lg border items-center justify-center"
+                  style={{
+                    backgroundColor: selectedDay === index ? colors.accent : colors.surface,
+                    borderColor: selectedDay === index ? colors.accent : colors.border,
+                  }}
                 >
-                  <Text variant="caption" className={selectedDay === index ? "text-black font-medium" : "text-gray-500"}>
+                  <Text variant="caption" className={selectedDay === index ? "font-medium" : ""} style={{ color: selectedDay === index ? colors.background : colors.textMuted }}>
                     {day}
                   </Text>
                 </Pressable>
@@ -932,11 +949,13 @@ const daySwipeResponder = useRef(
                 <Pressable
                   key={lesson}
                   onPress={() => setSelectedLesson(lesson)}
-                  className={`flex-1 h-11 rounded-lg border items-center justify-center ${
-                    selectedLesson === lesson ? "bg-green-200 border-green-600" : "border-gray-200"
-                  }`}
+                  className="flex-1 h-11 rounded-lg border items-center justify-center"
+                  style={{
+                    backgroundColor: selectedLesson === lesson ? colors.accent : colors.surface,
+                    borderColor: selectedLesson === lesson ? colors.accent : colors.border,
+                  }}
                 >
-                  <Text variant="caption" className={selectedLesson === lesson ? "text-black font-medium" : "text-gray-500"}>
+                  <Text variant="caption" className={selectedLesson === lesson ? "font-medium" : ""} style={{ color: selectedLesson === lesson ? colors.background : colors.textMuted }}>
                     {lesson}
                   </Text>
                 </Pressable>
@@ -944,11 +963,12 @@ const daySwipeResponder = useRef(
             </View>
 
             <Pressable
-              className="mt-5 h-13 rounded-lg bg-primary flex-row items-center justify-center gap-2"
+              className="mt-5 h-13 rounded-lg flex-row items-center justify-center gap-2"
+              style={{ backgroundColor: colors.accent }}
               onPress={saveScheduleItem}
             >
-                <Plus size={24} color="#fff" />
-                <Text className="text-white font-[Poppins-Regular]">
+                <Plus size={24} color={colors.background} />
+                <Text className="font-[Poppins-Regular]" style={{ color: colors.background }}>
                   {editingItemIndex === null ? "Adicionar" : "Salvar"}
                 </Text>
             </Pressable>

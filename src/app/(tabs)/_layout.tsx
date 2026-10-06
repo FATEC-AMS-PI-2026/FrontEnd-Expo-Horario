@@ -75,6 +75,11 @@ export default function MainLayout() {
       />
 
       <Tabs.Screen
+        name="professorsdetalhe"
+        options={{ href: null }}
+      />
+
+      <Tabs.Screen
         name="settings"
         options={{
           title: "Configurações",

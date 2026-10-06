@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -209,9 +210,18 @@ export default function Professors() {
           /* Lista de professores */
           <ScrollView showsVerticalScrollIndicator={false}>
             {filteredProfessors.map((prof) => (
-              <View
+              <TouchableOpacity
                 key={prof.id}
                 className="rounded-lg p-3 mb-4"
+                accessibilityRole="button"
+                accessibilityLabel={`Ver horários de ${prof.nome}`}
+                activeOpacity={0.7}
+                onPress={() =>
+                  router.push({
+                    pathname: "/(tabs)/professorsdetalhe",
+                    params: { nome: prof.nome, materias: prof.materias },
+                  })
+                }
                 style={{
                   backgroundColor: colors.surface,
                   borderColor: colors.border,
@@ -257,16 +267,14 @@ export default function Professors() {
                 </View>
 
                 <View className="items-end mt-1">
-                  <TouchableOpacity>
-                    <Text
-                      className="text-xs font-medium"
-                      style={{ color: colors.accent }}
-                    >
-                      Ver Horários
-                    </Text>
-                  </TouchableOpacity>
+                  <Text
+                    className="text-xs font-medium"
+                    style={{ color: colors.accent }}
+                  >
+                    Ver Horários
+                  </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
 
             <View className="h-10" />
