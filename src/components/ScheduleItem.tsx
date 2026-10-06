@@ -32,7 +32,6 @@ export function ScheduleItem({
   return (
     <View
       className="flex-row items-center rounded-xl px-3 py-3 mb-1 overflow-hidden"
-      style={{ backgroundColor: colors.surfaceAlt }}
     >
       <View
         className="w-1.5 h-14 rounded-full mr-3 shrink-0"
@@ -62,7 +61,7 @@ export function ScheduleItem({
           variant="body"
           className="font-medium"
           style={{ color: colors.text }}
-          numberOfLines={2}
+          numberOfLines={1}
         >
           {isEmpty ? "Aula vazia" : subject}
         </Text>

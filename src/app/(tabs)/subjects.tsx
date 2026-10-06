@@ -298,7 +298,7 @@ const DAY_NAMES = [
 const SUBJECTS = ["Projeto Integrador", "Banco de Dados", "Interação Humano Computador"];
 const LESSONS = [1, 2, 3, 4, 5, 6];
 const SCREEN_WIDTH = Dimensions.get("window").width;
-const SORTABLE_ITEM_HEIGHT = 64;
+const SORTABLE_ITEM_HEIGHT = 67;
 
 export const ERROR_MESSAGES: Record<string | number, string> = {
   400: "Requisição inválida. Verifique os dados fornecidos e tente novamente.",
@@ -689,7 +689,7 @@ const daySwipeResponder = useRef(
     const { item, sourceIndex } = row;
 
     return (
-      <View className="mb-1.5">
+      <View className="mb-1.5"> 
         {selectionActionsIndex === sourceIndex && (
           <SelectionActions
             isVisible={isSelectionMode}
@@ -699,7 +699,7 @@ const daySwipeResponder = useRef(
           />
         )}
         {item.isInterval ? (
-          <View className="flex-row items-center rounded-xl px-3 py-2 overflow-hidden" style={{ backgroundColor: colors.accentSoft }}>
+          <View className="flex-row items-center rounded-xl px-3 py-3 mt-1.5 overflow-hidden" style={{ backgroundColor: colors.surfaceAlt }}>
             <View className="w-[58px] shrink-0 mr-1">
               <Text variant="caption" className="leading-4" style={{ color: colors.textMuted }}>
                 {item.startTime}
