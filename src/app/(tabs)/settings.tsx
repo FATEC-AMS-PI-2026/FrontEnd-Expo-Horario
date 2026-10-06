@@ -1,7 +1,7 @@
 import { Switch } from "@/components";
 import { Card } from "@/components/Card";
 import { Text } from "@/components/Text";
-import { useRouter } from "expo-router";
+import { Link, useRouter, type Href } from "expo-router";
 import { BugIcon, ChevronRight, ExternalLink, KeyIcon, LogOut, Moon } from "lucide-react-native";
 import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -103,21 +103,44 @@ export default function Settings() {
             <Text variant="body" className="mb-2" style={{ color: theme.text }}>
               Outros
             </Text>
-            {otherSettings.map((item, index) => (
-              <Card
-                key={item.label}
-                className="settingsFrame flex flex-row justify-between py-3"
-                borderColor={theme.border}
-                backgroundColor={theme.surface}
-                borderPosition={getBorderPosition(index, otherSettings.length)}
-              >
-                <View className="flex flex-row items-center gap-3">
-                  {item.icon}
-                  <Text style={{ color: theme.text }}>{item.label}</Text>
-                </View>
-                {item.action}
-              </Card>
-            ))}
+            {otherSettings.map((item, index) => {
+              const isAbout = item.label === "Sobre";
+              const isPrivacy = item.label === "Privacidade e Segurança";
+              const isTerms = item.label === "Termos de Uso";
+
+              const card = (
+                <Card
+                  className="settingsFrame flex flex-row justify-between py-3"
+                  borderColor={theme.border}
+                  backgroundColor={theme.surface}
+                  borderPosition={getBorderPosition(index, otherSettings.length)}
+                >
+                  <View className="flex flex-row items-center gap-3">
+                    {item.icon}
+                    <Text style={{ color: theme.text }}>{item.label}</Text>
+                  </View>
+                  {item.action}
+                </Card>
+              );
+
+              return isAbout || isPrivacy || isTerms ? (
+                <Link
+                  key={item.label}
+                  href={
+                    isAbout
+                      ? "/settings/about"
+                      : isPrivacy
+                        ? ("/settings/private" as Href)
+                        : ("/settings/term" as Href)
+                  }
+                  asChild
+                >
+                  <Pressable accessibilityRole="link">{card}</Pressable>
+                </Link>
+              ) : (
+                <View key={item.label}>{card}</View>
+              );
+            })}
           </View>
 
           <View className="mb-4">
