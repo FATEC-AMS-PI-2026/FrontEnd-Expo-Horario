@@ -148,18 +148,24 @@ export default function Settings() {
               Área perigosa
             </Text>
 
-            <Card
-              className="settingsFrame flex flex-row justify-between py-3"
-              backgroundColor={theme.dangerBackground}
-              borderColor={theme.dangerBorder}
-              borderPosition="all"
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Sair e voltar para a tela inicial"
+              onPress={() => router.replace("/welcomeScreen")}
             >
-              <View className="flex flex-row items-center gap-3">
-                <LogOut color={theme.dangerText} />
-                <Text style={{ color: theme.dangerText }}>Sair</Text>
-              </View>
-              <ChevronRight color={theme.dangerText} />
-            </Card>
+              <Card
+                className="settingsFrame flex flex-row justify-between py-3"
+                backgroundColor={theme.dangerBackground}
+                borderColor={theme.dangerBorder}
+                borderPosition="all"
+              >
+                <View className="flex flex-row items-center gap-3">
+                  <LogOut color={theme.dangerText} />
+                  <Text style={{ color: theme.dangerText }}>Sair</Text>
+                </View>
+                <ChevronRight color={theme.dangerText} />
+              </Card>
+            </Pressable>
           </View>
         </View>
       </View>

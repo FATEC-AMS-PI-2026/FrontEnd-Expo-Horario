@@ -5,14 +5,14 @@ import {
   ActivityIndicator,
   Image,
   ImageSourcePropType,
-  SafeAreaView,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
+import { SearchBar } from "../../components";
 import { useAppTheme } from "../../theme/ThemeContext";
 
 interface Professor {
@@ -96,11 +96,11 @@ export default function Professors() {
   return (
     <SafeAreaView
       className="flex-1"
-      style={{ backgroundColor: colors.background }}
+      style={{ backgroundColor: colors.background, flex: 1 }}
     >
-      <View className="px-5 pt-4 flex-1">
+      <View className="px-5 flex-1">
         {/* Título */}
-        <View className="flex-row items-center justify-between mb-6 mt-2">
+        <View className="flex-row items-center justify-center mb-6">
           <Text
             className="text-lg font-bold"
             style={{ color: colors.text }}
@@ -112,39 +112,11 @@ export default function Professors() {
         </View>
 
         {/* Barra de pesquisa */}
-        <View className="flex-row items-center mb-6">
-          <View
-            className="flex-1 flex-row items-center rounded-md px-3 py-2 mr-4"
-            style={{
-              backgroundColor: colors.surface,
-              borderColor: colors.border,
-              borderWidth: 1,
-            }}
-          >
-            <Feather
-              name="search"
-              size={18}
-              color={colors.accent}
-            />
-
-            <TextInput
-              placeholder="Buscar"
-              placeholderTextColor={colors.textMuted}
-              className="flex-1 ml-2 text-base"
-              style={{ color: colors.text }}
-              value={searchQuery}
-              onChangeText={setSearchQuery}
-            />
-          </View>
-
-          <TouchableOpacity>
-            <Feather
-              name="filter"
-              size={24}
-              color={colors.accent}
-            />
-          </TouchableOpacity>
-        </View>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Buscar"
+        />
 
         {/* Carregamento */}
         {isLoading ? (

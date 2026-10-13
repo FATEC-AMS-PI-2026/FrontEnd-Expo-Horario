@@ -17,7 +17,7 @@ const borderPositionStyles = {
   },
   top: {
     borderWidth: 1,
-    borderBottomWidth: 0.2,
+    borderBottomWidth: 1,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     borderBottomLeftRadius: 0,
@@ -25,7 +25,7 @@ const borderPositionStyles = {
   },
   bottom: {
     borderWidth: 1,
-    borderBottomWidth: 0.2,
+    borderBottomWidth: 1,
     borderBottomLeftRadius: 12,
     borderBottomRightRadius: 12,
     borderTopLeftRadius: 0,
