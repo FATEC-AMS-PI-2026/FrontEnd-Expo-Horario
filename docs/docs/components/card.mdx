@@ -1,0 +1,114 @@
+---
+sidebar_position: 6
+---
+
+# Card
+
+Container para agrupar conteúdo com header, content e footer.
+
+## Importação
+
+```tsx
+import { Card, CardHeader, CardContent, CardFooter } from "../components";
+```
+
+## Básico
+
+```tsx
+<Card>
+  <Text>Conteúdo do card</Text>
+</Card>
+```
+
+---
+
+## Estrutura
+
+| Componente | Descrição |
+|------------|-----------|
+| `Card` | Container principal com borda e padding |
+| `CardHeader` | Cabeçalho (margin bottom 8px) |
+| `CardContent` | Conteúdo principal |
+| `CardFooter` | Rodapé com borda superior |
+
+---
+
+## Props
+
+### Card
+
+| Prop | Tipo | Default | Descrição |
+|------|------|---------|-----------|
+| `children` | `ReactNode` | - | Conteúdo |
+| `className` | `string` | - | Classes adicionais |
+
+### CardHeader / CardContent / CardFooter
+
+| Prop | Tipo | Default | Descrição |
+|------|------|---------|-----------|
+| `children` | `ReactNode` | - | Conteúdo |
+| `className` | `string` | - | Classes adicionais |
+
+---
+
+## Exemplos
+
+### Card simples
+
+```tsx
+<Card>
+  <Text variant="subheading">Título</Text>
+  <Text variant="body">Descrição do card</Text>
+</Card>
+```
+
+### Card com header e footer
+
+```tsx
+<Card>
+  <CardHeader>
+    <Text variant="subheading">Projeto</Text>
+  </CardHeader>
+  <CardContent>
+    <Text variant="body">Descrição do projeto</Text>
+  </CardContent>
+  <CardFooter>
+    <Button variant="ghost" size="sm">Cancelar</Button>
+    <Button size="sm">Salvar</Button>
+  </CardFooter>
+</Card>
+```
+
+### Card com badge
+
+```tsx
+<Card>
+  <CardHeader>
+    <View className="flex-row items-center justify-between">
+      <Text variant="subheading">Tarefa</Text>
+      <Badge variant="success">Concluída</Badge>
+    </View>
+  </CardHeader>
+  <CardContent>
+    <Text variant="body">Implementar componente Button</Text>
+  </CardContent>
+  <CardFooter>
+    <Text variant="caption">Atualizado há 2 horas</Text>
+  </CardFooter>
+</Card>
+```
+
+### Grid de cards
+
+```tsx
+<View className="flex-row flex-wrap gap-4">
+  <Card className="flex-1 min-w-[150px]">
+    <Text variant="subheading">Receita</Text>
+    <Text variant="heading">R$ 12.500</Text>
+  </Card>
+  <Card className="flex-1 min-w-[150px]">
+    <Text variant="subheading">Despesas</Text>
+    <Text variant="heading">R$ 8.200</Text>
+  </Card>
+</View>
+```

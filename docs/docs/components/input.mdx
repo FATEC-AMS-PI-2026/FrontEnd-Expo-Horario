@@ -1,0 +1,129 @@
+---
+sidebar_position: 3
+---
+
+# Input
+
+Campo de entrada com suporte a label, ícones e estados de erro/foco.
+
+## Importação
+
+```tsx
+import { Input } from "../components";
+```
+
+## Básico
+
+```tsx
+<Input label="Email" placeholder="email@exemplo.com" />
+<Input label="Senha" placeholder="••••••" secureTextEntry />
+```
+
+---
+
+## Com Ícones
+
+Aceita `leftIcon` e `rightIcon` como `ReactNode`.
+
+```tsx
+<Input
+  label="Buscar"
+  placeholder="Buscar..."
+  leftIcon={<Text>🔍</Text>}
+/>
+
+<Input
+  label="Senha"
+  placeholder="Senha"
+  secureTextEntry
+  rightIcon={<Text>👁</Text>}
+/>
+
+<Input
+  label="Email"
+  placeholder="Email"
+  leftIcon={<Text>✉️</Text>}
+  rightIcon={<Text>✓</Text>}
+/>
+```
+
+---
+
+## Estados
+
+### Foco
+
+Quando o input recebe foco, exibe uma borda azul com ring.
+
+```tsx
+// Automático - sem configuração necessária
+<Input label="Email" placeholder="email@exemplo.com" />
+```
+
+O estado de foco usa:
+- `border-ring` (azul #3b82f6)
+- `ring-2 ring-ring/30` (sombra azul translúcida)
+
+### Erro
+
+Exibe borda vermelha e mensagem de erro abaixo.
+
+```tsx
+<Input
+  label="Email"
+  placeholder="email@exemplo.com"
+  error="Campo obrigatório"
+/>
+```
+
+---
+
+## Props
+
+| Prop | Tipo | Default | Descrição |
+|------|------|---------|-----------|
+| `label` | `string` | - | Label do campo |
+| `error` | `string` | - | Mensagem de erro |
+| `leftIcon` | `ReactNode` | - | Ícone à esquerda |
+| `rightIcon` | `ReactNode` | - | Ícone à direita |
+| `placeholder` | `string` | - | Texto placeholder |
+| `secureTextEntry` | `boolean` | `false` | Esconde texto (senhas) |
+| `className` | `string` | - | Classes adicionais |
+
+---
+
+## Exemplos Completos
+
+### Formulário de login
+
+```tsx
+<View className="gap-4">
+  <Input
+    label="Email"
+    placeholder="email@exemplo.com"
+    leftIcon={<Text>✉️</Text>}
+    keyboardType="email-address"
+    autoCapitalize="none"
+  />
+  <Input
+    label="Senha"
+    placeholder="••••••"
+    secureTextEntry
+    rightIcon={<Text>👁</Text>}
+  />
+  <Button variant="primary">Entrar</Button>
+</View>
+```
+
+### Campo com validação
+
+```tsx
+<Input
+  label="Senha"
+  placeholder="Mínimo 8 caracteres"
+  secureTextEntry
+  error={password.length < 8 ? "Mínimo 8 caracteres" : undefined}
+  value={password}
+  onChangeText={setPassword}
+/>
+```

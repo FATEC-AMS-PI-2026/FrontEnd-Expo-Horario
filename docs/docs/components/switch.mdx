@@ -1,0 +1,103 @@
+---
+sidebar_position: 5
+---
+
+# Switch
+
+Toggle ligado/desligado com opção de label.
+
+## Importação
+
+```tsx
+import { Switch } from "../components";
+```
+
+## Básico
+
+```tsx
+const [ligado, setLigado] = useState(false);
+
+<Switch value={ligado} onValueChange={setLigado} />
+```
+
+---
+
+## Com Label
+
+```tsx
+const [notificacoes, setNotificacoes] = useState(false);
+
+<Switch
+  value={notificacoes}
+  onValueChange={setNotificacoes}
+  label="Notificações"
+/>
+```
+
+---
+
+## Props
+
+| Prop | Tipo | Default | Descrição |
+|------|------|---------|-----------|
+| `value` | `boolean` | - | Estado atual |
+| `onValueChange` | `(val: boolean) => void` | - | Callback ao mudar |
+| `label` | `string` | - | Label ao lado |
+| `className` | `string` | - | Classes adicionais |
+
+---
+
+## Cores
+
+| Estado | Cor |
+|--------|-----|
+| Ligado | `#005C6E` (primary) |
+| Desligado | `#e4e4e7` (border) |
+
+---
+
+## Exemplos
+
+### Configurações
+
+```tsx
+<View className="gap-4">
+  <Switch
+    value={darkMode}
+    onValueChange={setDarkMode}
+    label="Modo escuro"
+  />
+  <Switch
+    value={notificacoes}
+    onValueChange={setNotificacoes}
+    label="Notificações"
+  />
+  <Switch
+    value={son}
+    onValueChange={setSon}
+    label="Som"
+  />
+</View>
+```
+
+### Lista de opções
+
+```tsx
+<Card>
+  <CardHeader>
+    <Text variant="subheading">Preferências</Text>
+  </CardHeader>
+  <CardContent className="gap-3">
+    <Switch
+      value={autoSave}
+      onValueChange={setAutoSave}
+      label="Salvar automaticamente"
+    />
+    <Switch
+      value={compactMode}
+      onValueChange={setCompactMode}
+      label="Modo compacto"
+    />
+  </CardContent>
+</Card>
+```

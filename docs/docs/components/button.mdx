@@ -1,0 +1,116 @@
+---
+sidebar_position: 2
+---
+
+# Button
+
+Botão com variantes, tamanhos, estados e animação de clique.
+
+## Importação
+
+```tsx
+import { Button } from "../components";
+```
+
+## Variantes
+
+| Variante | Classe | Estilo |
+|----------|--------|--------|
+| `primary` | `bg-primary` | Fundo azul, texto branco |
+| `secondary` | `bg-foreground` | Fundo cinza, texto azul |
+| `outline` | `border border-primary` | Borda azul, fundo transparente |
+| `ghost` | `bg-transparent` | Sem fundo, texto cinza |
+| `destructive` | `bg-error` | Fundo vermelho, texto branco |
+
+```tsx
+<Button variant="primary">Primary</Button>
+<Button variant="secondary">Secondary</Button>
+<Button variant="outline">Outline</Button>
+<Button variant="ghost">Ghost</Button>
+<Button variant="destructive">Destructive</Button>
+```
+
+---
+
+## Tamanhos
+
+| Tamanho | Padding | Border Radius |
+|---------|---------|---------------|
+| `sm` | 12px 6px | 4px |
+| `md` | 14px 16px | 10px |
+| `lg` | 22px 24px | 21px |
+
+```tsx
+<Button size="sm">Small</Button>
+<Button size="md">Medium</Button>
+<Button size="lg">Large</Button>
+```
+
+---
+
+## Estados
+
+### Loading
+
+Exibe um `ActivityIndicator` e desabilita o botão.
+
+```tsx
+<Button loading>Carregando</Button>
+```
+
+### Disabled
+
+Botão desabilitado com opacidade reduzida.
+
+```tsx
+<Button disabled>Desabilitado</Button>
+```
+
+---
+
+## Animação
+
+O botão tem uma animação de **scale** no clique:
+
+- **Press in**: Escala para `0.92`
+- **Press out**: Volta para `1.0`
+- **Spring**: damping 15, stiffness 400
+
+A animação é automática e não precisa de configuração.
+
+---
+
+## Props
+
+| Prop | Tipo | Default | Descrição |
+|------|------|---------|-----------|
+| `variant` | `"primary" \| "secondary" \| "outline" \| "ghost" \| "destructive"` | `"primary"` | Variante visual |
+| `size` | `"sm" \| "md" \| "lg"` | `"md"` | Tamanho |
+| `loading` | `boolean` | `false` | Mostra loading spinner |
+| `disabled` | `boolean` | `false` | Desabilita o botão |
+| `children` | `ReactNode` | - | Conteúdo do botão |
+| `className` | `string` | - | Classes adicionais |
+
+---
+
+## Exemplos Completos
+
+### Botão com ícone
+
+```tsx
+<Button variant="primary">
+  <View className="flex-row items-center gap-2">
+    <Icon name="save" />
+    <Text>Salvar</Text>
+  </View>
+</Button>
+```
+
+### Grupo de botões
+
+```tsx
+<View className="flex-row gap-3">
+  <Button variant="outline" size="sm">Cancelar</Button>
+  <Button size="sm">Confirmar</Button>
+</View>
+```

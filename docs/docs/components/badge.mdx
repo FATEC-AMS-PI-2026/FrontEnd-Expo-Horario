@@ -1,0 +1,81 @@
+---
+sidebar_position: 4
+---
+
+# Badge
+
+Tag de status para indicar estados, categorias ou informações.
+
+## Importação
+
+```tsx
+import { Badge } from "../components";
+```
+
+## Variantes
+
+| Variante | Cor Fundo | Cor Texto | Uso |
+|----------|-----------|-----------|-----|
+| `default` | `#f4f4f5` | `#71717a` | Neutro |
+| `success` | Verde claro | Verde escuro | Sucesso, ativo |
+| `warning` | Amarelo claro | Amarelo escuro | Aviso, pendente |
+| `error` | Vermelho claro | Vermelho escuro | Erro, inativo |
+| `accent` | Ciano claro | Ciano escuro | Destaque |
+
+```tsx
+<Badge>Default</Badge>
+<Badge variant="success">Ativo</Badge>
+<Badge variant="warning">Pendente</Badge>
+<Badge variant="error">Inativo</Badge>
+<Badge variant="accent">Novo</Badge>
+```
+
+---
+
+## Props
+
+| Prop | Tipo | Default | Descrição |
+|------|------|---------|-----------|
+| `variant` | `"default" \| "success" \| "warning" \| "error" \| "accent"` | `"default"` | Variante visual |
+| `children` | `ReactNode` | - | Conteúdo do badge |
+| `className` | `string` | - | Classes adicionais |
+
+---
+
+## Exemplos
+
+### Lista de status
+
+```tsx
+<View className="flex-row flex-wrap gap-2">
+  <Badge>Rascunho</Badge>
+  <Badge variant="success">Publicado</Badge>
+  <Badge variant="warning">Em revisão</Badge>
+  <Badge variant="error">Arquivado</Badge>
+</View>
+```
+
+### Badge inline com texto
+
+```tsx
+<View className="flex-row items-center gap-2">
+  <Text>Usuário</Text>
+  <Badge variant="success">Online</Badge>
+</View>
+```
+
+### Badge em card
+
+```tsx
+<Card>
+  <CardHeader>
+    <View className="flex-row items-center justify-between">
+      <Text variant="subheading">Projeto</Text>
+      <Badge variant="success">Ativo</Badge>
+    </View>
+  </CardHeader>
+  <CardContent>
+    <Text variant="body">Descrição do projeto</Text>
+  </CardContent>
+</Card>
+```
