@@ -9,31 +9,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useAppTheme } from "../../theme/ThemeContext";
 
 export default function Settings() {
-  const { darkMode, setDarkMode } = useAppTheme();
+  const { colors, darkMode, setDarkMode } = useAppTheme();
   const router = useRouter();
-  const isDark = darkMode;
-
-  const theme = isDark
-    ? {
-        background: "#111827",
-        surface: "#1f2937",
-        border: "#374151",
-        text: "#f9fafb",
-        muted: "#d1d5db",
-        dangerBackground: "#3f0d0d",
-        dangerText: "#fca5a5",
-        dangerBorder: "#ef4444",
-      }
-    : {
-        background: "#ffffff",
-        surface: "#ffffff",
-        border: "#d1d5db",
-        text: "#111827",
-        muted: "#374151",
-        dangerBackground: "#fef2f2",
-        dangerText: "#ef4444",
-        dangerBorder: "#ef4444",
-      };
 
   const getBorderPosition = (index: number, total: number) => {
     if (total === 1) return "all";
@@ -43,26 +20,26 @@ export default function Settings() {
   };
 
   const generalSettings = [
-    { icon: <KeyIcon color={theme.text} />, label: "Alterar Senha", action: <ChevronRight color={theme.muted} /> },
-    { icon: <BugIcon color={theme.text} />, label: "Relatar Problema", action: <ChevronRight color={theme.muted} /> },
-    { icon: <Moon color={theme.text} />, label: "Modo Escuro", action: null },
+    { icon: <KeyIcon color={colors.text} />, label: "Alterar Senha", action: <ChevronRight color={colors.textMuted} /> },
+    { icon: <BugIcon color={colors.text} />, label: "Relatar Problema", action: <ChevronRight color={colors.textMuted} /> },
+    { icon: <Moon color={colors.text} />, label: "Modo Escuro", action: null },
   ];
 
   const otherSettings = [
-    { icon: <KeyIcon color={theme.text} />, label: "Sobre", action: <ExternalLink color={theme.muted} /> },
-    { icon: <BugIcon color={theme.text} />, label: "Privacidade e Segurança", action: <ExternalLink color={theme.muted} /> },
-    { icon: <Moon color={theme.text} />, label: "Termos de Uso", action: <ExternalLink color={theme.muted} /> },
+    { icon: <KeyIcon color={colors.text} />, label: "Sobre", action: <ExternalLink color={colors.textMuted} /> },
+    { icon: <BugIcon color={colors.text} />, label: "Privacidade e Segurança", action: <ExternalLink color={colors.textMuted} /> },
+    { icon: <Moon color={colors.text} />, label: "Termos de Uso", action: <ExternalLink color={colors.textMuted} /> },
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
-      <View className="flex-1" style={{ backgroundColor: theme.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+      <View className="flex-1" style={{ backgroundColor: colors.background }}>
         <View className="items-center py-5">
-          <Text variant="heading" style={{ color: theme.text }}>Configurações</Text>
+          <Text variant="heading">Configurações</Text>
         </View>
-        <View className="px-3" style={{ backgroundColor: theme.background }}>
+        <View className="px-3" style={{ backgroundColor: colors.background }}>
           <View className="mb-4">
-            <Text variant="body" className="mb-2" style={{ color: theme.text }}>
+            <Text variant="body" className="mb-2">
               Configurações gerais
             </Text>
             {generalSettings.map((item, index) => {
@@ -80,13 +57,13 @@ export default function Settings() {
                 >
                   <Card
                     className="settingsFrame flex flex-row justify-between py-3"
-                    borderColor={theme.border}
-                    backgroundColor={theme.surface}
+                    borderColor={colors.border}
+                    backgroundColor={colors.surface}
                     borderPosition={getBorderPosition(index, generalSettings.length)}
                   >
                     <View className="flex flex-row items-center gap-3">
                       {item.icon}
-                      <Text style={{ color: theme.text }}>{item.label}</Text>
+                      <Text>{item.label}</Text>
                     </View>
                     {isDarkModeToggle ? (
                       <Switch value={darkMode} onValueChange={setDarkMode} />
@@ -100,7 +77,7 @@ export default function Settings() {
           </View>
 
           <View className="mb-4">
-            <Text variant="body" className="mb-2" style={{ color: theme.text }}>
+            <Text variant="body" className="mb-2">
               Outros
             </Text>
             {otherSettings.map((item, index) => {
@@ -111,13 +88,13 @@ export default function Settings() {
               const card = (
                 <Card
                   className="settingsFrame flex flex-row justify-between py-3"
-                  borderColor={theme.border}
-                  backgroundColor={theme.surface}
+                  borderColor={colors.border}
+                  backgroundColor={colors.surface}
                   borderPosition={getBorderPosition(index, otherSettings.length)}
                 >
                   <View className="flex flex-row items-center gap-3">
                     {item.icon}
-                    <Text style={{ color: theme.text }}>{item.label}</Text>
+                    <Text>{item.label}</Text>
                   </View>
                   {item.action}
                 </Card>
@@ -144,7 +121,7 @@ export default function Settings() {
           </View>
 
           <View className="mb-4">
-            <Text variant="body" className="mb-2" style={{ color: theme.text }}>
+            <Text variant="body" className="mb-2">
               Área perigosa
             </Text>
 
@@ -155,15 +132,15 @@ export default function Settings() {
             >
               <Card
                 className="settingsFrame flex flex-row justify-between py-3"
-                backgroundColor={theme.dangerBackground}
-                borderColor={theme.dangerBorder}
+                backgroundColor={colors.dangerSoft}
+                borderColor={colors.danger}
                 borderPosition="all"
               >
                 <View className="flex flex-row items-center gap-3">
-                  <LogOut color={theme.dangerText} />
-                  <Text style={{ color: theme.dangerText }}>Sair</Text>
+                  <LogOut color={colors.danger} />
+                  <Text style={{ color: colors.danger }}>Sair</Text>
                 </View>
-                <ChevronRight color={theme.dangerText} />
+                <ChevronRight color={colors.danger} />
               </Card>
             </Pressable>
           </View>
