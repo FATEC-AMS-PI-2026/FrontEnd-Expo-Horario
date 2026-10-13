@@ -1,58 +1,48 @@
 import { View, TextInput, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useState } from "react";
 import { Feather } from "@expo/vector-icons";
-import { FlaskConical, BookMarked, Inbox, AlertCircle } from "lucide-react-native";
+import { Inbox, AlertCircle } from "lucide-react-native";
 import "../../../global.css";
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  ScheduleItem,
-  Text,
-} from "../../components";
+import { Button, Text } from "../../components";
+import { RoomCard, type RoomCardProps } from "../../components/RoomCard";
 import { useAppTheme } from "../../theme/ThemeContext";
 
-function StatusBadge({ isAvailable }: { isAvailable: boolean }) {
-  const { colors, darkMode } = useAppTheme();
-
-  if (isAvailable) {
-    return (
-      <View
-        className="flex-row items-center px-2 py-1 rounded-full"
-        style={{ backgroundColor: darkMode ? "#064e3b" : "#dcfce7" }}
-      >
-        <View
-          className="w-2 h-2 rounded-full mr-1.5"
-          style={{ backgroundColor: "#10b981" }}
-        />
-        <Text style={{ color: "#10b981", fontSize: 12, fontWeight: "600" }}>
-          Livre
-        </Text>
-      </View>
-    );
-  }
-
-  return (
-    <View
-      className="flex-row items-center px-2 py-1 rounded-full"
-      style={{ backgroundColor: colors.dangerSoft }}
-    >
-      <View
-        className="w-2 h-2 rounded-full mr-1.5"
-        style={{ backgroundColor: colors.danger }}
-      />
-      <Text style={{ color: colors.danger, fontSize: 12, fontWeight: "600" }}>
-        Em utilização
-      </Text>
-    </View>
-  );
-}
+// Dados das salas (depois você troca pelo retorno da API)
+const ROOMS: (RoomCardProps & { id: string })[] = [
+  {
+    id: "lab01",
+    name: "Lab 01",
+    type: "lab",
+    currentClass: {
+      startTime: "15:00h",
+      endTime: "16:50h",
+      subject: "Banco de Dados",
+      teacher: "Renato",
+    },
+  },
+  {
+    id: "sala02",
+    name: "Sala 02",
+    type: "sala",
+    currentClass: {
+      startTime: "15:00h",
+      endTime: "16:50h",
+      subject: "Banco de Dados",
+      teacher: "Renato",
+    },
+  },
+  { id: "lab03", name: "Lab 03", type: "lab" },
+  { id: "sala11", name: "Sala 11", type: "sala" },
+];
 
 export default function Classrooms() {
   const { colors, darkMode } = useAppTheme();
   const [busca, setBusca] = useState("");
   const [status, setStatus] = useState<"loading" | "empty" | "error" | "success">("success");
+
+  const salasFiltradas = ROOMS.filter((r) =>
+    r.name.toLowerCase().includes(busca.trim().toLowerCase())
+  );
 
   return (
     <ScrollView
@@ -117,201 +107,21 @@ export default function Classrooms() {
         </View>
       )}
 
-      {status === "success" && (
-        <View>
-
-      <Card className="mt-5 w-full rounded-xl bg-background border-gray-300">
-        <CardHeader className="mb-1 w-full">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <FlaskConical size={20} color={colors.text} />
-              <Text
-                variant="subheading"
-                style={{ color: colors.text, fontWeight: "bold" }}
-              >
-                Lab 01
-              </Text>
-            </View>
-            <StatusBadge isAvailable={false} />
+      {status === "success" &&
+        (salasFiltradas.length === 0 ? (
+          <View className="flex-1 items-center justify-center pt-20">
+            <Inbox size={48} color={colors.textMuted} />
+            <Text variant="subheading" className="mt-4" style={{ color: colors.textMuted }}>
+              Nenhuma sala encontrada
+            </Text>
           </View>
-        </CardHeader>
-
-        <CardContent
-          className="rounded-2xl p-2 w-full flex-1"
-          style={{
-            backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-          }}
-        >
-          <View className="w-full h-20">
-            <ScheduleItem
-              startTime="15:00h"
-              endTime="16:50h"
-              subject="Banco de Dados"
-              teacher="Renato"
-              location="Lab. 01"
-              accentColor="#067f95"
-            />
+        ) : (
+          <View>
+            {salasFiltradas.map(({ id, ...room }) => (
+              <RoomCard key={id} {...room} />
+            ))}
           </View>
-        </CardContent>
-      </Card>
-
-      <Card className="mt-5 w-full rounded-xl bg-background border-gray-300">
-        <CardHeader className="mb-1 w-full">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <BookMarked size={20} color={colors.text} />
-              <Text
-                variant="subheading"
-                style={{ color: colors.text, fontWeight: "bold" }}
-              >
-                Sala 02
-              </Text>
-            </View>
-            <StatusBadge isAvailable={false} />
-          </View>
-        </CardHeader>
-
-        <CardContent
-          className="rounded-2xl p-2 w-full flex-1"
-          style={{
-            backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-          }}
-        >
-          <View className="w-full h-20">
-            <ScheduleItem
-              startTime="15:00h"
-              endTime="16:50h"
-              subject="Banco de Dados"
-              teacher="Renato"
-              location="Sala. 02"
-              accentColor="#067f95"
-            />
-          </View>
-        </CardContent>
-      </Card>
-
-      {/* card menorzzinho */}
-      <Card className="mt-5 w-full rounded-xl bg-background border-gray-300 h-15">
-        <CardHeader className="mb-1 w-full">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <FlaskConical size={20} color={colors.text} />
-              <Text
-                variant="subheading"
-                style={{ color: colors.text, fontWeight: "bold" }}
-              >
-                Lab 03
-              </Text>
-            </View>
-            <StatusBadge isAvailable={true} />
-          </View>
-        </CardHeader>
-
-        <CardContent
-          className="rounded-2xl p-2 w-full flex-1"
-          style={{
-            backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-          }}
-        >
-          <View className="w-full h-20"></View>
-        </CardContent>
-      </Card>
-      {/* card menorzzinho */}
-
-            {/* card menorzzinho */}
-      <Card className="mt-5 w-full rounded-xl bg-background border-gray-300 h-15">
-        <CardHeader className="mb-1 w-full">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <FlaskConical size={20} color={colors.text} />
-              <Text
-                variant="subheading"
-                style={{ color: colors.text, fontWeight: "bold" }}
-              >
-                Lab 03
-              </Text>
-            </View>
-            <StatusBadge isAvailable={true} />
-          </View>
-        </CardHeader>
-
-        <CardContent
-          className="rounded-2xl p-2 w-full flex-1"
-          style={{
-            backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-          }}
-        >
-          <View className="w-full h-20"></View>
-        </CardContent>
-      </Card>
-      {/* card menorzzinho */}
-
-
-      <Card className="mt-5 w-full rounded-xl bg-background border-gray-300">
-        <CardHeader className="mb-1 w-full">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <BookMarked size={20} color={colors.text} />
-              <Text
-                variant="subheading"
-                style={{ color: colors.text, fontWeight: "bold" }}
-              >
-                Sala 02
-              </Text>
-            </View>
-            <StatusBadge isAvailable={false} />
-          </View>
-        </CardHeader>
-
-        <CardContent
-          className="rounded-2xl p-2 w-full flex-1"
-          style={{
-            backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-          }}
-        >
-          <View className="w-full h-20">
-            <ScheduleItem
-              startTime="15:00h"
-              endTime="16:50h"
-              subject="Banco de Dados"
-              teacher="Renato"
-              location="Sala. 02"
-              accentColor="#067f95"
-            />
-          </View>
-        </CardContent>
-      </Card>
-
-        {/* card menorzzinho */}
-      <Card className="mt-5 w-full rounded-xl bg-background border-gray-300 h-15">
-        <CardHeader className="mb-1 w-full">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <BookMarked size={20} color={colors.text} />
-              <Text
-                variant="subheading"
-                style={{ color: colors.text, fontWeight: "bold" }}
-              >
-                Sala 11
-              </Text>
-            </View>
-            <StatusBadge isAvailable={true} />
-          </View>
-        </CardHeader>
-
-        <CardContent
-          className="rounded-2xl p-2 w-full flex-1"
-          style={{
-            backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-          }}
-        >
-          <View className="w-full h-20"></View>
-        </CardContent>
-      </Card>
-      {/* card menorzzinho */}
-
-        </View>
-      )}
+        ))}
     </ScrollView>
   );
 }

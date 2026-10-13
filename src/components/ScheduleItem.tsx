@@ -15,6 +15,8 @@ interface ScheduleItemProps {
   isSelected?: boolean;
   onPress?: () => void;
   onLongPress?: () => void;
+  showLocation?: boolean;
+  embedded?: boolean;
 }
 
 export function ScheduleItem({
@@ -25,12 +27,18 @@ export function ScheduleItem({
   location,
   isEmpty = false,
   accentColor,
+  showLocation = true,
+  embedded = false,
 }: ScheduleItemProps) {
   const { colors } = useAppTheme();
   const accent = accentColor ?? colors.accent;
 
   return (
-    <View className="flex-row items-center rounded-xl px-3 py-3 mb-1 overflow-hidden" style={{ backgroundColor: colors.surfaceAlt }}>
+    <View
+      className={`flex-row items-center rounded-xl px-3 py-3
+      overflow-hidden ${embedded ? "" : "mb-1"}`}
+      style={{ backgroundColor: colors.surfaceAlt }}
+    >
       <View
         className="w-1.5 h-14 rounded-full mr-3 shrink-0"
         style={{ backgroundColor: accent }}
@@ -68,16 +76,15 @@ export function ScheduleItem({
         </View>
       </View>
 
-      <View className="shrink-0 max-w-[72px] items-end">
-        <Text
-          variant="body"
-          className="text-right"
-          style={{ color: accent }}
-          numberOfLines={1}
-        >
-          {location}
-        </Text>
-      </View>
+      {showLocation && (
+        <View
+        className="shrink-0
+        max-w-[72px] items-end">
+          <Text variant="body" className="text-right" style={{ color: accent }} numberOfLines={1}>
+            {location}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
