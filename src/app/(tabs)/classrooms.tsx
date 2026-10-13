@@ -1,8 +1,8 @@
-import { Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { AlertCircle, BookMarked, FlaskConical, Inbox } from "lucide-react-native";
 import { useState } from "react";
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, TextInput, View } from "react-native";
+import { ActivityIndicator, Pressable, ScrollView, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import "../../../global.css";
 import {
   Button,
@@ -10,6 +10,7 @@ import {
   CardContent,
   CardHeader,
   ScheduleItem,
+  SearchBar,
   Text,
 } from "../../components";
 import { useAppTheme } from "../../theme/ThemeContext";
@@ -20,8 +21,12 @@ function StatusBadge({ isAvailable }: { isAvailable: boolean }) {
   if (isAvailable) {
     return (
       <View
-        className="flex-row items-center px-2 py-1 rounded-full"
-        style={{ backgroundColor: darkMode ? "#064e3b" : "#dcfce7" }}
+        className="flex-row items-center px-2 h-8 py-1 rounded-full"
+        style={{
+          backgroundColor: darkMode ? "#064e3b" : "#dcfce7",
+          borderWidth: 1,
+          borderColor: "#10b981",
+        }}
       >
         <View
           className="w-2 h-2 rounded-full mr-1.5"
@@ -37,7 +42,11 @@ function StatusBadge({ isAvailable }: { isAvailable: boolean }) {
   return (
     <View
       className="flex-row items-center px-2 py-1 rounded-full"
-      style={{ backgroundColor: colors.dangerSoft }}
+      style={{
+        backgroundColor: colors.dangerSoft,
+        borderWidth: 1,
+        borderColor: colors.danger,
+      }}
     >
       <View
         className="w-2 h-2 rounded-full mr-1.5"
@@ -57,298 +66,231 @@ export default function Classrooms() {
   const [status, setStatus] = useState<"loading" | "empty" | "error" | "success">("success");
 
   return (
-    <ScrollView
-      className="flex-1 px-3 pt-14"
-      contentContainerStyle={{ paddingBottom: 96 }}
-      showsVerticalScrollIndicator={false}
+    <SafeAreaView
+      className="flex-1"
       style={{
         backgroundColor: darkMode ? colors.backgroundAlt : colors.background,
+        flex: 1,
       }}
     >
-      <View style={styles.searchContainer}>
-        <Feather name="search" size={24} color="#333" />
-        <View style={styles.separator} />
-        <TextInput
-          style={[
-            styles.searchInput,
-            { color: colors.text, outlineStyle: "none" } as any,
-          ]}
-          placeholder="Buscar"
-          placeholderTextColor={colors.textMuted}
-          value={busca}
-          onChangeText={setBusca}
-          underlineColorAndroid="transparent"
-        />
-      </View>
-
-      {/* Botões para simular os estados 
-      <View className="flex-row gap-2 mb-2 flex-wrap justify-center">
-        <TouchableOpacity onPress={() => setStatus('success')} style={[styles.badge, { backgroundColor: status === 'success' ? colors.accent : colors.surfaceAlt }]}><Text style={{fontSize: 12, color: status === 'success' ? '#fff' : colors.text}}>Sucesso</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => setStatus('loading')} style={[styles.badge, { backgroundColor: status === 'loading' ? colors.accent : colors.surfaceAlt }]}><Text style={{fontSize: 12, color: status === 'loading' ? '#fff' : colors.text}}>Loading</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => setStatus('empty')} style={[styles.badge, { backgroundColor: status === 'empty' ? colors.accent : colors.surfaceAlt }]}><Text style={{fontSize: 12, color: status === 'empty' ? '#fff' : colors.text}}>Vazio</Text></TouchableOpacity>
-        <TouchableOpacity onPress={() => setStatus('error')} style={[styles.badge, { backgroundColor: status === 'error' ? colors.accent : colors.surfaceAlt }]}><Text style={{fontSize: 12, color: status === 'error' ? '#fff' : colors.text}}>Erro</Text></TouchableOpacity>
-      </View>
-*/}
-      {status === "loading" && (
-        <View className="flex-1 items-center justify-center pt-20">
-          <ActivityIndicator size="large" color={colors.accent} />
-          <Text variant="body" className="mt-4" style={{ color: colors.textMuted }}>
-            Carregando salas...
-          </Text>
-        </View>
-      )}
-
-      {status === "empty" && (
-        <View className="flex-1 items-center justify-center pt-20">
-          <Inbox size={48} color={colors.textMuted} />
-          <Text variant="subheading" className="mt-4" style={{ color: colors.textMuted }}>
-            Nenhuma sala encontrada
-          </Text>
-        </View>
-      )}
-
-      {status === "error" && (
-        <View className="flex-1 items-center justify-center pt-20">
-          <AlertCircle size={48} color={colors.danger} />
-          <Text variant="subheading" className="mt-4 text-center" style={{ color: colors.text }}>
-            Ocorreu um erro ao carregar as salas.
-          </Text>
-          <Button variant="outline" className="mt-4" onPress={() => setStatus("loading")}>
-            Tentar novamente
-          </Button>
-        </View>
-      )}
-
-      {status === "success" && (
-        <View>
-
-
-<Pressable onPress={() => router.push("/classdetails/ClassDetails")}>
-  <Card className="mt-5 w-full rounded-xl bg-background border-gray-300">
-    <CardHeader className="mb-1 w-full">
-      <View className="flex-row items-center justify-between">
-        <View className="flex-row items-center gap-2">
-          <FlaskConical size={20} color={colors.text} />
+      <View className="px-5 flex-1">
+        {/* Título */}
+        <View className="flex-row items-center justify-center mb-6 mt-2">
           <Text
-            variant="subheading"
-            style={{ color: colors.text, fontWeight: "bold" }}
+            className="text-lg font-bold"
+            style={{ color: colors.text }}
           >
-            Lab 01
+            Salas e Laboratórios
           </Text>
+
+          <View style={{ width: 24 }} />
         </View>
+        <SearchBar value={busca} onChangeText={setBusca} placeholder="Buscar" />
 
-        <StatusBadge isAvailable={false} />
-      </View>
-    </CardHeader>
+        {status === "loading" && (
+          <View className="flex-1 items-center justify-center pt-20">
+            <ActivityIndicator size="large" color={colors.accent} />
+            <Text variant="body" className="mt-4" style={{ color: colors.textMuted }}>
+              Carregando salas...
+            </Text>
+          </View>
+        )}
 
-    <CardContent
-      className="rounded-2xl p-2 w-full flex-1"
-      style={{
-        backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-      }}
-    >
-      <View className="w-full h-20">
-        <ScheduleItem
-          startTime="15:00h"
-          endTime="16:50h"
-          subject="Banco de Dados"
-          teacher="Renato"
-          location="Lab. 01"
-          accentColor="#067f95"
-        />
-      </View>
-    </CardContent>
-  </Card>
-</Pressable>
+        {status === "empty" && (
+          <View className="flex-1 items-center justify-center pt-20">
+            <Inbox size={48} color={colors.textMuted} />
+            <Text variant="subheading" className="mt-4" style={{ color: colors.textMuted }}>
+              Nenhuma sala encontrada
+            </Text>
+          </View>
+        )}
 
-      <Card className="mt-5 w-full rounded-xl bg-background border-gray-300">
-        <CardHeader className="mb-1 w-full">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <BookMarked size={20} color={colors.text} />
-              <Text
-                variant="subheading"
-                style={{ color: colors.text, fontWeight: "bold" }}
+        {status === "error" && (
+          <View className="flex-1 items-center justify-center pt-20">
+            <AlertCircle size={48} color={colors.danger} />
+            <Text variant="subheading" className="mt-4 text-center" style={{ color: colors.text }}>
+              Ocorreu um erro ao carregar as salas.
+            </Text>
+            <Button variant="outline" className="mt-4" onPress={() => setStatus("loading")}>
+              Tentar novamente
+            </Button>
+          </View>
+        )}
+
+        {status === "success" && (
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 40 }}
+          >
+            <Pressable onPress={() => router.push("/classdetails/ClassDetails")}>
+              <Card borderColor={colors.border} className="mb-4 w-full rounded-xl bg-background border border-border">
+                <CardHeader className="mb-0 w-full">
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-row items-center gap-2">
+                      <FlaskConical size={20} color={colors.text} />
+                      <Text
+                        variant="subheading"
+                        style={{ color: colors.text, fontWeight: "bold" }}
+                      >
+                        Lab 01
+                      </Text>
+                    </View>
+
+                    <StatusBadge isAvailable={false} />
+                  </View>
+                </CardHeader>
+
+                <CardContent
+                  className="rounded-xl p-2 w-full flex-1"
+                  style={{
+                    backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
+                  }}
+                >
+                  <View className="w-full">
+                    <ScheduleItem
+                      startTime="15:00h"
+                      endTime="16:50h"
+                      subject="Banco de Dados"
+                      teacher="Renato"
+                      location="Lab. 01"
+                      accentColor="#067f95"
+                    />
+                  </View>
+                </CardContent>
+              </Card>
+            </Pressable>
+
+            <Card borderColor={colors.border} className="mb-4 w-full rounded-xl bg-background border border-border">
+              <CardHeader className="mb-1 w-full">
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-2">
+                    <BookMarked size={20} color={colors.text} />
+                    <Text
+                      variant="subheading"
+                      style={{ color: colors.text, fontWeight: "bold" }}
+                    >
+                      Sala 02
+                    </Text>
+                  </View>
+                  <StatusBadge isAvailable={false} />
+                </View>
+              </CardHeader>
+
+              <CardContent
+                className="rounded-xl p-2 w-full flex-1"
+                style={{
+                  backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
+                }}
               >
-                Sala 02
-              </Text>
-            </View>
-            <StatusBadge isAvailable={false} />
-          </View>
-        </CardHeader>
-
-        <CardContent
-          className="rounded-2xl p-2 w-full flex-1"
-          style={{
-            backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-          }}
-        >
-          <View className="w-full h-20">
-            <ScheduleItem
-              startTime="15:00h"
-              endTime="16:50h"
-              subject="Banco de Dados"
-              teacher="Renato"
-              location="Sala. 02"
-              accentColor="#067f95"
-            />
-          </View>
-        </CardContent>
-      </Card>
-
-      {/* card menorzzinho */}
-      <Card className="mt-5 w-full rounded-xl bg-background border-gray-300 h-15">
-        <CardHeader className="mb-1 w-full">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <FlaskConical size={20} color={colors.text} />
-              <Text
-                variant="subheading"
-                style={{ color: colors.text, fontWeight: "bold" }}
-              >
-                Lab 03
-              </Text>
-            </View>
-            <StatusBadge isAvailable={true} />
-          </View>
-        </CardHeader>
-
-        <CardContent
-          className="rounded-2xl p-2 w-full flex-1"
-          style={{
-            backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-          }}
-        >
-          <View className="w-full h-20"></View>
-        </CardContent>
-      </Card>
-      {/* card menorzzinho */}
+                <View className="w-full h-20">
+                  <ScheduleItem
+                    startTime="15:00h"
+                    endTime="16:50h"
+                    subject="Banco de Dados"
+                    teacher="Renato"
+                    location="Sala. 02"
+                    accentColor="#067f95"
+                  />
+                </View>
+              </CardContent>
+            </Card>
 
             {/* card menorzzinho */}
-      <Card className="mt-5 w-full rounded-xl bg-background border-gray-300 h-15">
-        <CardHeader className="mb-1 w-full">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <FlaskConical size={20} color={colors.text} />
-              <Text
-                variant="subheading"
-                style={{ color: colors.text, fontWeight: "bold" }}
+            <Card borderColor={colors.border} className="mb-4 w-full rounded-xl bg-background border border-border">
+              <CardHeader className="mb-0 w-full">
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-2">
+                    <FlaskConical size={20} color={colors.text} />
+                    <Text
+                      variant="subheading"
+                      style={{ color: colors.text, fontWeight: "bold" }}
+                    >
+                      Lab 03
+                    </Text>
+                  </View>
+                  <StatusBadge isAvailable={true} />
+                </View>
+              </CardHeader>
+            </Card>
+            {/* card menorzzinho */}
+
+            {/* card menorzzinho */}
+            <Card borderColor={colors.border} className="mb-4 w-full rounded-xl bg-background border border-border">
+              <CardHeader className="mb-0 w-full">
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-2">
+                    <FlaskConical size={20} color={colors.text} />
+                    <Text
+                      variant="subheading"
+                      style={{ color: colors.text, fontWeight: "bold" }}
+                    >
+                      Lab 03
+                    </Text>
+                  </View>
+                  <StatusBadge isAvailable={true} />
+                </View>
+              </CardHeader>
+            </Card>
+            {/* card menorzzinho */}
+
+
+            <Card borderColor={colors.border} className="mb-4 w-full rounded-xl bg-background border border-border">
+              <CardHeader className="mb-1 w-full">
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-2">
+                    <BookMarked size={20} color={colors.text} />
+                    <Text
+                      variant="subheading"
+                      style={{ color: colors.text, fontWeight: "bold" }}
+                    >
+                      Sala 02
+                    </Text>
+                  </View>
+                  <StatusBadge isAvailable={false} />
+                </View>
+              </CardHeader>
+
+              <CardContent
+                className="rounded-xl p-2 w-full flex-1"
+                style={{
+                  backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
+                }}
               >
-                Lab 03
-              </Text>
-            </View>
-            <StatusBadge isAvailable={true} />
-          </View>
-        </CardHeader>
+                <View className="w-full h-20">
+                  <ScheduleItem
+                    startTime="15:00h"
+                    endTime="16:50h"
+                    subject="Banco de Dados"
+                    teacher="Renato"
+                    location="Sala. 02"
+                    accentColor="#067f95"
+                  />
+                </View>
+              </CardContent>
+            </Card>
 
-        <CardContent
-          className="rounded-2xl p-2 w-full flex-1"
-          style={{
-            backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-          }}
-        >
-          <View className="w-full h-20"></View>
-        </CardContent>
-      </Card>
-      {/* card menorzzinho */}
+            {/* card menorzzinho */}
+            <Card borderColor={colors.border} className="mb-4 w-full rounded-xl bg-background border border-border">
+              <CardHeader className="mb-0 w-full">
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center gap-2">
+                    <BookMarked size={20} color={colors.text} />
+                    <Text
+                      variant="subheading"
+                      style={{ color: colors.text, fontWeight: "bold" }}
+                    >
+                      Sala 11
+                    </Text>
+                  </View>
+                  <StatusBadge isAvailable={true} />
+                </View>
+              </CardHeader>
+            </Card>
+            {/* card menorzzinho */}
 
-
-      <Card className="mt-5 w-full rounded-xl bg-background border-gray-300">
-        <CardHeader className="mb-1 w-full">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <BookMarked size={20} color={colors.text} />
-              <Text
-                variant="subheading"
-                style={{ color: colors.text, fontWeight: "bold" }}
-              >
-                Sala 02
-              </Text>
-            </View>
-            <StatusBadge isAvailable={false} />
-          </View>
-        </CardHeader>
-
-        <CardContent
-          className="rounded-2xl p-2 w-full flex-1"
-          style={{
-            backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-          }}
-        >
-          <View className="w-full h-20">
-            <ScheduleItem
-              startTime="15:00h"
-              endTime="16:50h"
-              subject="Banco de Dados"
-              teacher="Renato"
-              location="Sala. 02"
-              accentColor="#067f95"
-            />
-          </View>
-        </CardContent>
-      </Card>
-
-        {/* card menorzzinho */}
-      <Card className="mt-5 w-full rounded-xl bg-background border-gray-300 h-15">
-        <CardHeader className="mb-1 w-full">
-          <View className="flex-row items-center justify-between">
-            <View className="flex-row items-center gap-2">
-              <BookMarked size={20} color={colors.text} />
-              <Text
-                variant="subheading"
-                style={{ color: colors.text, fontWeight: "bold" }}
-              >
-                Sala 11
-              </Text>
-            </View>
-            <StatusBadge isAvailable={true} />
-          </View>
-        </CardHeader>
-
-        <CardContent
-          className="rounded-2xl p-2 w-full flex-1"
-          style={{
-            backgroundColor: darkMode ? colors.backgroundAlt : "#e1e8f6",
-          }}
-        >
-          <View className="w-full h-20"></View>
-        </CardContent>
-      </Card>
-      {/* card menorzzinho */}
-
-        </View>
-      )}
-    </ScrollView>
+          </ScrollView>
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    height: 50,
-    marginBottom: 20,
-  },
-  separator: {
-    width: 1,
-    height: 20,
-    marginHorizontal: 10,
-    backgroundColor: "#ccc",
-  },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
-  badge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-  },
-});
