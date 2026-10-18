@@ -21,6 +21,7 @@ interface Professor {
   nome: string;
   materias: string;
   cursos: string;
+  disciplinas: DisciplinaApi[];
   foto: ImageSourcePropType;
 }
 
@@ -87,78 +88,126 @@ export default function Professors() {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [professorsData, setProfessorsData] = useState<Professor[]>([]);
+  const [mostrarFiltros, setMostrarFiltros] = useState(false);
+  const [cursoSelecionado, setCursoSelecionado] = useState<number | null>(null);
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState<number | null>(null);
 
- const fetchData = async () => {
-  setIsLoading(true);
-  setIsError(false);
+  const [disciplinasData, setDisciplinasData] = useState<DisciplinaApi[]>([]);
+  const fetchData = async () => {
+    setIsLoading(true);
+    setIsError(false);
 
-  try {
-    // As três consultas são independentes.
-    const [professores, vinculos, disciplinas] = await Promise.all([
-      buscarTodasPaginas<ProfessorApi>("/professores"),
-      buscarTodasPaginas<VinculoApi>("/professores-disciplinas"),
-      buscarTodasPaginas<DisciplinaApi>("/disciplinas"),
-    ]);
+    try {
+      // As três consultas são independentes.
+      const [professores, vinculos, disciplinas] = await Promise.all([
+        buscarTodasPaginas<ProfessorApi>("/professores"),
+        buscarTodasPaginas<VinculoApi>("/professores-disciplinas"),
+        buscarTodasPaginas<DisciplinaApi>("/disciplinas"),
+      ]);
 
-    const disciplinasPorId = new Map(
-      disciplinas.map((disciplina) => [disciplina.id, disciplina])
-    );
+      const disciplinasPorId = new Map(
+        disciplinas.map((disciplina) => [disciplina.id, disciplina])
+      );
 
-    const dados: Professor[] = professores.map((professor) => {
-      const disciplinasDoProfessor = vinculos
-        .filter((vinculo) => vinculo.professorId === professor.id)
-        .map((vinculo) => disciplinasPorId.get(vinculo.disciplinaId))
-        .filter(
-          (disciplina): disciplina is DisciplinaApi =>
-            disciplina !== undefined
-        );
+      const dados: Professor[] = professores.map((professor) => {
+        const disciplinasDoProfessor = vinculos
+          .filter((vinculo) => vinculo.professorId === professor.id)
+          .map((vinculo) => disciplinasPorId.get(vinculo.disciplinaId))
+          .filter(
+            (disciplina): disciplina is DisciplinaApi =>
+              disciplina !== undefined
+          );
 
-      const nomesDisciplinas = [
-        ...new Set(
-          disciplinasDoProfessor.map((disciplina) => disciplina.nome)
-        ),
-      ];
+        const nomesDisciplinas = [
+          ...new Set(
+            disciplinasDoProfessor.map((disciplina) => disciplina.nome)
+          ),
+        ];
 
-      const nomesCursos = [
-        ...new Set(
-          disciplinasDoProfessor
-            .map((disciplina) => disciplina.curso?.nome)
-            .filter((nome): nome is string => Boolean(nome))
-        ),
-      ];
+        const nomesCursos = [
+          ...new Set(
+            disciplinasDoProfessor
+              .map((disciplina) => disciplina.curso?.nome)
+              .filter((nome): nome is string => Boolean(nome))
+          ),
+        ];
 
-      return {
-        id: String(professor.id),
-        nome: professor.nome,
-        materias: nomesDisciplinas.join("; ") || "Sem disciplinas vinculadas",
-        cursos: nomesCursos.join("; ") || "Sem cursos vinculados",
-        foto: require("../../../assets/images/professor.png"),
-      };
-    });
+        return {
+          id: String(professor.id),
+          nome: professor.nome,
+          materias: nomesDisciplinas.join("; ") || "Sem disciplinas vinculadas",
+          cursos: nomesCursos.join("; ") || "Sem cursos vinculados",
+          foto: require("../../../assets/images/professor.png"),
+          disciplinas: disciplinasDoProfessor,
+        };
 
-    setProfessorsData(dados);
-  } catch (error) {
-    console.error("Erro ao carregar professores:", error);
-    setIsError(true);
-  } finally {
-    setIsLoading(false);
-  }
-};
+      });
+
+      setProfessorsData(dados);
+      setDisciplinasData(disciplinas);
+    } catch (error) {
+      console.error("Erro ao carregar professores:", error);
+      setIsError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchData();
   }, []);
 
-const normalizar = (texto: string) =>
-  texto
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
+  const normalizar = (texto: string) =>
+    texto
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .toLowerCase()
+      .trim();
 
-const filteredProfessors = professorsData.filter((professor) =>
-  normalizar(professor.nome).includes(normalizar(searchQuery))
-);
+  // Cursos sem repetição, obtidos das disciplinas.
+  const cursosDisponiveis = Array.from(
+    new Map(
+      disciplinasData.flatMap((disciplina) =>
+        disciplina.curso
+          ? [[disciplina.curso.id, disciplina.curso] as const]
+          : []
+      )
+    ).values()
+  ).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+
+  // Ao selecionar um curso, só oferece disciplinas daquele curso.
+  const disciplinasDisponiveis = disciplinasData
+    .filter(
+      (disciplina) =>
+        cursoSelecionado === null ||
+        disciplina.curso?.id === cursoSelecionado
+    )
+    .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+
+  const filteredProfessors = professorsData.filter((professor) => {
+    const correspondeNome = normalizar(professor.nome).includes(
+      normalizar(searchQuery)
+    );
+
+    const semFiltro =
+      cursoSelecionado === null && disciplinaSelecionada === null;
+
+    const correspondeFiltros =
+      semFiltro ||
+      professor.disciplinas.some((disciplina) => {
+        const correspondeCurso =
+          cursoSelecionado === null ||
+          disciplina.curso?.id === cursoSelecionado;
+
+        const correspondeDisciplina =
+          disciplinaSelecionada === null ||
+          disciplina.id === disciplinaSelecionada;
+
+        return correspondeCurso && correspondeDisciplina;
+      });
+
+    return correspondeNome && correspondeFiltros;
+  });
 
   return (
     <SafeAreaView
@@ -204,7 +253,12 @@ const filteredProfessors = professorsData.filter((professor) =>
             />
           </View>
 
-          <TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setMostrarFiltros((valorAtual) => !valorAtual)}
+            accessibilityRole="button"
+            accessibilityLabel="Mostrar ou ocultar filtros"
+            accessibilityState={{ expanded: mostrarFiltros }}
+          >
             <Feather
               name="filter"
               size={24}
@@ -213,6 +267,209 @@ const filteredProfessors = professorsData.filter((professor) =>
           </TouchableOpacity>
         </View>
 
+
+{mostrarFiltros && !isLoading && !isError && (
+  <View
+    className="rounded-lg p-3 mb-4"
+    style={{
+      backgroundColor: colors.surface,
+      borderColor: colors.border,
+      borderWidth: 1,
+      flexShrink: 1,
+      maxHeight: "55%",
+    }}
+  >
+    <ScrollView
+      showsVerticalScrollIndicator
+      nestedScrollEnabled
+      style={{ flexShrink: 1 }}
+      contentContainerStyle={{ paddingBottom: 8 }}
+    >
+      <Text
+        className="font-semibold mb-3"
+        style={{ color: colors.text }}
+      >
+        1. Escolha o curso
+      </Text>
+
+      <TouchableOpacity
+        accessibilityRole="button"
+        accessibilityState={{ selected: cursoSelecionado === null }}
+        onPress={() => {
+          setCursoSelecionado(null);
+          setDisciplinaSelecionada(null);
+        }}
+        style={{
+          padding: 12,
+          marginBottom: 8,
+          borderRadius: 8,
+          backgroundColor:
+            cursoSelecionado === null
+              ? colors.accent
+              : colors.surfaceAlt,
+        }}
+      >
+        <Text
+          style={{
+            flexShrink: 1,
+            color:
+              cursoSelecionado === null
+                ? colors.background
+                : colors.text,
+          }}
+        >
+          Todos os cursos
+        </Text>
+      </TouchableOpacity>
+
+      {cursosDisponiveis.map((curso) => (
+        <TouchableOpacity
+          key={curso.id}
+          accessibilityRole="button"
+          accessibilityState={{
+            selected: cursoSelecionado === curso.id,
+          }}
+          onPress={() => {
+            setCursoSelecionado(curso.id);
+            setDisciplinaSelecionada(null);
+          }}
+          style={{
+            padding: 12,
+            marginBottom: 8,
+            borderRadius: 8,
+            backgroundColor:
+              cursoSelecionado === curso.id
+                ? colors.accent
+                : colors.surfaceAlt,
+          }}
+        >
+          <Text
+            style={{
+              flexShrink: 1,
+              color:
+                cursoSelecionado === curso.id
+                  ? colors.background
+                  : colors.text,
+            }}
+          >
+            {curso.nome}
+          </Text>
+        </TouchableOpacity>
+      ))}
+
+      {cursoSelecionado !== null && (
+        <View style={{ marginTop: 16 }}>
+          <Text
+            className="font-semibold mb-3"
+            style={{ color: colors.text }}
+          >
+            2. Escolha a disciplina (opcional)
+          </Text>
+
+          <TouchableOpacity
+            accessibilityRole="button"
+            accessibilityState={{
+              selected: disciplinaSelecionada === null,
+            }}
+            onPress={() => setDisciplinaSelecionada(null)}
+            style={{
+              padding: 12,
+              marginBottom: 8,
+              borderRadius: 8,
+              backgroundColor:
+                disciplinaSelecionada === null
+                  ? colors.accent
+                  : colors.surfaceAlt,
+            }}
+          >
+            <Text
+              style={{
+                flexShrink: 1,
+                color:
+                  disciplinaSelecionada === null
+                    ? colors.background
+                    : colors.text,
+              }}
+            >
+              Todas as disciplinas
+            </Text>
+          </TouchableOpacity>
+
+          {disciplinasDisponiveis.map((disciplina) => (
+            <TouchableOpacity
+              key={disciplina.id}
+              accessibilityRole="button"
+              accessibilityState={{
+                selected: disciplinaSelecionada === disciplina.id,
+              }}
+              onPress={() =>
+                setDisciplinaSelecionada(disciplina.id)
+              }
+              style={{
+                padding: 12,
+                marginBottom: 8,
+                borderRadius: 8,
+                backgroundColor:
+                  disciplinaSelecionada === disciplina.id
+                    ? colors.accent
+                    : colors.surfaceAlt,
+              }}
+            >
+              <Text
+                style={{
+                  flexShrink: 1,
+                  color:
+                    disciplinaSelecionada === disciplina.id
+                      ? colors.background
+                      : colors.text,
+                }}
+              >
+                {disciplina.nome}
+              </Text>
+            </TouchableOpacity>
+          ))}
+
+          {disciplinasDisponiveis.length === 0 && (
+            <Text style={{ color: colors.textMuted }}>
+              Nenhuma disciplina cadastrada neste curso.
+            </Text>
+          )}
+        </View>
+      )}
+    </ScrollView>
+
+    <View
+      style={{
+        flexDirection: "row",
+        justifyContent: "space-between",
+        paddingTop: 12,
+      }}
+    >
+      <TouchableOpacity
+        accessibilityRole="button"
+        onPress={() => {
+          setCursoSelecionado(null);
+          setDisciplinaSelecionada(null);
+        }}
+        style={{ padding: 8 }}
+      >
+        <Text style={{ color: colors.accent }}>
+          Limpar filtros
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        accessibilityRole="button"
+        onPress={() => setMostrarFiltros(false)}
+        style={{ padding: 8 }}
+      >
+        <Text style={{ color: colors.accent }}>
+          Ver professores
+        </Text>
+      </TouchableOpacity>
+    </View>
+  </View>
+)}
         {/* Carregamento */}
         {isLoading ? (
           <View className="flex-1 justify-center items-center">
@@ -318,7 +575,6 @@ const filteredProfessors = professorsData.filter((professor) =>
                     <Text
                       className="text-xs mt-1"
                       style={{ color: colors.textMuted }}
-                      numberOfLines={1}
                     >
                       {prof.materias}
                     </Text>
@@ -326,7 +582,6 @@ const filteredProfessors = professorsData.filter((professor) =>
                     <Text
                       className="text-xs mt-1"
                       style={{ color: colors.accent }}
-                      numberOfLines={1}
                     >
                       Cursos: {prof.cursos}
                     </Text>
