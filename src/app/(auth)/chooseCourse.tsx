@@ -44,7 +44,7 @@ interface CursosResponse {
 
 function CourseCard({ item }: { item: Curso }) {
   const scale = useSharedValue(1);
-  const { colors, darkMode } = useAppTheme();
+  const { colors } = useAppTheme();
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
@@ -66,55 +66,53 @@ function CourseCard({ item }: { item: Curso }) {
 
   return (
     <Animated.View style={[styles.cardWrapper, animatedStyle]}>
-<Pressable
-  onPressIn={handlePressIn}
-  onPressOut={handlePressOut}
-  onPress={() =>
-    router.push({
-      pathname: "/periodSelectionScreen",
-      params: {
-        cursoId: item.id.toString(),
-        cursoNome: item.nome,
-      },
-    })
-  }
-  style={[
-    styles.card,
-    {
-      backgroundColor: darkMode
-        ? colors.surface
-        : "#ffffff",
-      borderColor: colors.border,
-    },
-  ]}
->
-  <Text
-    style={[
-      styles.cardTitle,
-      { color: colors.text },
-    ]}
-  >
-    {item.nome}
-  </Text>
+      <Pressable
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        onPress={() =>
+          router.push({
+            pathname: "/periodSelectionScreen",
+            params: {
+              cursoId: item.id.toString(),
+              cursoNome: item.nome,
+            },
+          })
+        }
+        style={[
+          styles.card,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+          },
+        ]}
+      >
+        <Text
+          style={[
+            styles.cardTitle,
+            { color: colors.text },
+          ]}
+        >
+          {item.nome}
+        </Text>
 
-  <Text
-    style={[
-      styles.cardSubtitle,
-      { color: colors.textMuted },
-    ]}
-  >
-    Periodicidade: {item.periodicidade}
-  </Text>
+        <Text
+          style={[
+            styles.cardSubtitle,
+            { color: colors.textMuted },
+          ]}
+        >
+          Periodicidade: {item.periodicidade}
+        </Text>
 
-  <Text
-    style={[
-      styles.cardSubtitle,
-      { color: colors.textMuted },
-    ]}
-  >
-    Duração: {item.duracao}
-  </Text>
-</Pressable>
+        <Text
+          style={[
+            styles.cardSubtitle,
+            { color: colors.textMuted },
+          ]}
+        >
+          Duração: {item.duracao}
+        </Text>
+      </Pressable>
     </Animated.View>
   );
 }
@@ -134,12 +132,12 @@ export default function ChooseCourse() {
         setErro("");
 
 
-    const response = await fetch(`${API_URL}/cursos`);
+        const response = await fetch(`${API_URL}/cursos`);
         if (!response.ok) {
           throw new Error(
             `Erro na requisição: ${response.status}`
           );
-  }
+        }
 
         const data: CursosResponse = await response.json();
 
@@ -182,13 +180,8 @@ export default function ChooseCourse() {
         { backgroundColor: colors.background },
       ]}
     >
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: colors.background },
-        ]}
-      >
-        <View>
+      <View>
+        <View className="mx-5">
           <Button
             className="btn w-26 justify-center align-center"
             variant="secondary"
@@ -196,9 +189,8 @@ export default function ChooseCourse() {
             onPress={() => router.back()}
           >
             <View className="flex-row gap-1 items-center">
-              <LucideChevronLeft size={24} />
-
-              <Text className="text-primary m-0">
+              <LucideChevronLeft size={24} color={colors.text} />
+              <Text className="m-0" style={{ color: colors.text }}>
                 Voltar
               </Text>
             </View>
@@ -214,14 +206,28 @@ export default function ChooseCourse() {
           Escolha seu curso
         </Text>
 
-        <View style={styles.searchContainer}>
+        <View
+          style={[
+            styles.searchContainer,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+            },
+          ]}
+          className="mx-5"
+        >
           <Feather
             name="search"
             size={24}
             color={colors.text}
           />
 
-          <View style={styles.separator} />
+          <View
+            style={[
+              styles.separator,
+              { backgroundColor: colors.border },
+            ]}
+          />
 
           <TextInput
             style={[
@@ -242,12 +248,12 @@ export default function ChooseCourse() {
         {carregando ? (
           <ActivityIndicator
             size="large"
-            color={colors.text}
+            color={colors.accent}
           />
         ) : erro ? (
           <Text
             style={{
-              color: colors.text,
+              color: colors.danger,
               textAlign: "center",
             }}
           >
@@ -255,6 +261,7 @@ export default function ChooseCourse() {
           </Text>
         ) : (
           <FlatList
+          className="mx-5"
             data={filteredCourses}
             keyExtractor={(item) =>
               item.id.toString()

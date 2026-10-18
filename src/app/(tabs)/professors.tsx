@@ -6,14 +6,14 @@ import {
   ActivityIndicator,
   Image,
   ImageSourcePropType,
-  SafeAreaView,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
+import { SearchBar } from "../../components";
 import { useAppTheme } from "../../theme/ThemeContext";
 
 interface Professor {
@@ -212,11 +212,11 @@ export default function Professors() {
   return (
     <SafeAreaView
       className="flex-1"
-      style={{ backgroundColor: colors.background }}
+      style={{ backgroundColor: colors.background, flex: 1 }}
     >
-      <View className="px-5 pt-4 flex-1">
+      <View className="px-5 flex-1">
         {/* Título */}
-        <View className="flex-row items-center justify-between mb-6 mt-2">
+        <View className="flex-row items-center justify-center mb-6">
           <Text
             className="text-lg font-bold"
             style={{ color: colors.text }}

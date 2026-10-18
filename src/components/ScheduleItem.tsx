@@ -39,10 +39,10 @@ export function ScheduleItem({
         style={{ backgroundColor: accent }}
       />
 
-      <View className="w-[58px] shrink-0 mr-1">
+      <View className="w-16 shrink-0 mr-2">
         <Text
           variant="caption"
-          className="leading-4"
+          className="leading-4 font-medium"
           style={{ color: colors.textMuted }}
         >
           {startTime}
@@ -50,7 +50,7 @@ export function ScheduleItem({
 
         <Text
           variant="caption"
-          className="mt-1.5 leading-4"
+          className="mt-1.5 leading-4 font-medium"
           style={{ color: colors.textMuted }}
         >
           {endTime}

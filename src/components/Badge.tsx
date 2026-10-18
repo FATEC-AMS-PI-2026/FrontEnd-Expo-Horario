@@ -27,9 +27,9 @@ const variantTextColor: Record<Variant, string> = {
 export function Badge({ variant = "default", children, className }: BadgeProps) {
   return (
     <View
-      className={`px-2.5 py-0.5 rounded-full self-start ${variantClasses[variant]} ${className ?? ""}`}
+      className={`px-2.5 py-1 rounded-full self-start ${variantClasses[variant]} ${className ?? ""}`}
     >
-      <Text className={`text-xs font-medium ${variantTextColor[variant]}`}>{children}</Text>
+      <Text className={`text-xs font-semibold ${variantTextColor[variant]}`}>{children}</Text>
     </View>
   );
 }
