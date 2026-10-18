@@ -4,6 +4,7 @@ import { useState, } from 'react';
 import {
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Input, Text } from '../../components';
 import { useAppTheme } from '../../theme/ThemeContext';
 
@@ -35,71 +36,75 @@ export default function CadastroScreen() {
   };
 
   return (
-
-        <View className="flex-1 items-center" style={{ backgroundColor: colors.background }}>
-          <View className="w-full max-w-[400px]">
-            <View className="mt-5 mx-5">
-              <Button
-                className="btn w-fit justify-center align-center"
-                variant="secondary"
-                size="sm"
-                onPress={() => router.back()}
-              >
-                <View className="flex-row gap-1 items-center">
-                  <LucideChevronLeft size={24} />
-                  <Text className="text-primary m-0">Voltar</Text>
-                </View>
-              </Button>
+    <SafeAreaView
+  
+      style={{ backgroundColor: colors.background, flex: 1 }}
+    >
+      <View className="flex-1 items-center" style={{ backgroundColor: colors.background }}>
+        <View className="w-full max-w-[400px]">
+        <View className="mt-5 mx-5">
+          <Button
+            className="btn w-26 justify-center align-center"
+            variant="secondary"
+            size="sm"
+            onPress={() => router.back()}
+          >
+            <View className="flex-row gap-1 items-center">
+              <LucideChevronLeft size={24} color={colors.text} />
+              <Text className="text-primary m-0">Voltar</Text>
             </View>
-
-            <Text variant="heading" className="text-center mt-5">Criar Conta</Text>
-
-            <Text variant="caption" className="text-center mt-2 mb-10">
-              Insira seus dados pra criar conta
-            </Text>
-
-            <View className="mx-2 gap-2">
-              <Input
-                label="Email"
-                placeholder="Email"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
-              />
-              <Input
-                label="Senha"
-                  placeholder="Senha"
-                  secureTextEntry
-                  value={senha}
-                  onChangeText={setSenha}
-              />
-              <Input
-                label="Repita a senha"
-                placeholder="Senha"
-                secureTextEntry
-                value={confirmarSenha}
-                onChangeText={setConfirmarSenha}
-              />
-            </View>
-
-
-            <Button
-              className="mx-5 mt-4"
-              variant="primary"
-              onPress={handleCadastro}
-            >
-              Criar Conta
-            </Button>
-
-            <Button
-              className="mx-5 mt-2"
-              variant="secondary"
-              onPress={() => router.push('/login')}
-            >
-              Já tem conta? Entre
-            </Button>
-          </View>
+          </Button>
         </View>
+
+        <Text variant="heading" className="text-center mt-5">Criar Conta</Text>
+
+        <Text variant="caption" className="text-center mt-2 mb-10">
+          Insira seus dados pra criar conta
+        </Text>
+
+        <View className="mx-2 gap-2">
+          <Input
+            label="Email"
+            placeholder="Email"
+            keyboardType="email-address"
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
+          />
+          <Input
+            label="Senha"
+            placeholder="Senha"
+            secureTextEntry
+            value={senha}
+            onChangeText={setSenha}
+          />
+          <Input
+            label="Repita a senha"
+            placeholder="Senha"
+            secureTextEntry
+            value={confirmarSenha}
+            onChangeText={setConfirmarSenha}
+          />
+        </View>
+
+
+        <Button
+          className="mx-5 mt-4"
+          variant="primary"
+          onPress={handleCadastro}
+        >
+          Criar Conta
+        </Button>
+
+        <Button
+          className="mx-5 mt-2"
+          variant="secondary"
+          onPress={() => router.push('/login')}
+        >
+          Já tem conta? Entre
+        </Button>
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
