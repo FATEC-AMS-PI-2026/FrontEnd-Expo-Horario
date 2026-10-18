@@ -1,6 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
+import { API_URL } from "../../services/api";
 import {
   ActivityIndicator,
   Image,
@@ -23,40 +24,61 @@ interface Professor {
   foto: ImageSourcePropType;
 }
 
-const professors: Professor[] = [
-  {
-    id: "1",
-    nome: "Glauco Todesco",
-    materias:
-      "Projeto Integrador I; Técnica avançadas de Programação Web e Mobile",
-    cursos: "Análise e Desenvolvimento de Sistemas",
-    foto: require("../../../assets/images/professorExemplo.png"),
-  },
-  {
-    id: "2",
-    nome: "Renato Cardoso",
-    materias:
-      "Interação Humano-Computador; Técnicas Avançadas de Banco de Dados",
-    cursos: "Análise e Desenvolvimento de Sistemas",
-    foto: require("../../../assets/images/professorExemplo.png"),
-  },
-  {
-    id: "3",
-    nome: "Melky Duenas",
-    materias:
-      "Organização de Computadores e Sistemas Operacionais; Técnicas Avançadas de Programação",
-    cursos: "Análise e Desenvolvimento de Sistemas",
-    foto: require("../../../assets/images/professorExemplo.png"),
-  },
-  {
-    id: "4",
-    nome: "Lilian Simão",
-    materias: "Engenharia de Software; Ética",
-    cursos:
-      "Análise e Desenvolvimento de Sistemas; Processos Gerenciais",
-    foto: require("../../../assets/images/professorExemplo.png"),
-  },
-];
+// Formato da paginação retornada pelo backend.
+interface Pagina<T> {
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+interface ProfessorApi {
+  id: number;
+  nome: string;
+}
+
+interface VinculoApi {
+  id: number;
+  professorId: number;
+  disciplinaId: number;
+}
+
+interface DisciplinaApi {
+  id: number;
+  nome: string;
+  curso: {
+    id: number;
+    nome: string;
+  } | null;
+}
+
+// Busca todas as páginas de um endpoint.
+async function buscarTodasPaginas<T>(endpoint: string): Promise<T[]> {
+  const registros: T[] = [];
+  let paginaAtual = 0;
+  let totalPaginas = 1;
+
+  do {
+    const response = await fetch(
+      `${API_URL}${endpoint}?page=${paginaAtual}&size=100`
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Erro ao consultar ${endpoint}: HTTP ${response.status}`
+      );
+    }
+
+    const pagina: Pagina<T> = await response.json();
+
+    registros.push(...pagina.content);
+    totalPaginas = pagina.totalPages;
+    paginaAtual++;
+  } while (paginaAtual < totalPaginas);
+
+  return registros;
+}
 
 export default function Professors() {
   const { colors } = useAppTheme();
@@ -66,32 +88,77 @@ export default function Professors() {
   const [isError, setIsError] = useState(false);
   const [professorsData, setProfessorsData] = useState<Professor[]>([]);
 
-  const fetchData = () => {
-    setIsLoading(true);
-    setIsError(false);
+ const fetchData = async () => {
+  setIsLoading(true);
+  setIsError(false);
 
-    setTimeout(() => {
-      const simulateError = false;
+  try {
+    // As três consultas são independentes.
+    const [professores, vinculos, disciplinas] = await Promise.all([
+      buscarTodasPaginas<ProfessorApi>("/professores"),
+      buscarTodasPaginas<VinculoApi>("/professores-disciplinas"),
+      buscarTodasPaginas<DisciplinaApi>("/disciplinas"),
+    ]);
 
-      if (simulateError) {
-        setIsError(true);
-      } else {
-        setProfessorsData(professors);
-      }
+    const disciplinasPorId = new Map(
+      disciplinas.map((disciplina) => [disciplina.id, disciplina])
+    );
 
-      setIsLoading(false);
-    }, 1500);
-  };
+    const dados: Professor[] = professores.map((professor) => {
+      const disciplinasDoProfessor = vinculos
+        .filter((vinculo) => vinculo.professorId === professor.id)
+        .map((vinculo) => disciplinasPorId.get(vinculo.disciplinaId))
+        .filter(
+          (disciplina): disciplina is DisciplinaApi =>
+            disciplina !== undefined
+        );
+
+      const nomesDisciplinas = [
+        ...new Set(
+          disciplinasDoProfessor.map((disciplina) => disciplina.nome)
+        ),
+      ];
+
+      const nomesCursos = [
+        ...new Set(
+          disciplinasDoProfessor
+            .map((disciplina) => disciplina.curso?.nome)
+            .filter((nome): nome is string => Boolean(nome))
+        ),
+      ];
+
+      return {
+        id: String(professor.id),
+        nome: professor.nome,
+        materias: nomesDisciplinas.join("; ") || "Sem disciplinas vinculadas",
+        cursos: nomesCursos.join("; ") || "Sem cursos vinculados",
+        foto: require("../../../assets/images/professor.png"),
+      };
+    });
+
+    setProfessorsData(dados);
+  } catch (error) {
+    console.error("Erro ao carregar professores:", error);
+    setIsError(true);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchData();
   }, []);
 
-  const filteredProfessors = professorsData.filter(
-    (prof) =>
-      prof.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      prof.materias.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+const normalizar = (texto: string) =>
+  texto
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+
+const filteredProfessors = professorsData.filter((professor) =>
+  normalizar(professor.nome).includes(normalizar(searchQuery))
+);
 
   return (
     <SafeAreaView
@@ -219,7 +286,7 @@ export default function Professors() {
                 onPress={() =>
                   router.push({
                     pathname: "/(tabs)/professorsdetalhe",
-                    params: { nome: prof.nome, materias: prof.materias },
+                    params: { id: prof.id, nome: prof.nome, materias: prof.materias },
                   })
                 }
                 style={{
