@@ -2,6 +2,7 @@ import { User, Ellipsis } from "lucide-react-native";
 import { View, Pressable } from "react-native";
 import { useAppTheme } from "../theme/ThemeContext";
 import { Text } from "./Text";
+import type { ReactNode } from "react";
 
 interface ScheduleItemProps {
   startTime: string;
@@ -15,6 +16,9 @@ interface ScheduleItemProps {
   isSelected?: boolean;
   onPress?: () => void;
   onLongPress?: () => void;
+  children?: ReactNode;
+  isCurrent?: boolean;
+  hideMore?: boolean;
 }
 
 export function ScheduleItem({
@@ -26,16 +30,24 @@ export function ScheduleItem({
   isEmpty = false,
   accentColor,
   onMorePress,
+  children,
+  isCurrent = false,
+  hideMore = false,
 }: ScheduleItemProps) {
-  const { colors } = useAppTheme();
+  const { colors, darkMode } = useAppTheme();
   const accent = accentColor ?? colors.accent;
 
   return (
     <View
       className="flex-row items-center rounded-xl px-3 py-3 mb-1 overflow-hidden"
+      style={{
+        backgroundColor: isCurrent
+          ? darkMode ? colors.accentSoft : "rgba(6, 182, 212, 0.10)"
+          : "transparent",
+      }}
     >
       <View
-        className="w-1.5 h-14 rounded-full mr-3 shrink-0"
+        className="w-1.5 min-h-14 self-stretch rounded-full mr-3 shrink-0"
         style={{ backgroundColor: accent }}
       />
 
@@ -58,16 +70,21 @@ export function ScheduleItem({
       </View>
 
       <View className="flex-1 min-w-0 pr-1">
+        {isCurrent && (
+          <Text variant="caption" className="font-bold mb-1" style={{ color: accent }}>
+            Em andamento
+          </Text>
+        )}
         <Text
           variant="body"
           className="font-medium"
           style={{ color: colors.text }}
-          numberOfLines={1}
+          numberOfLines={children ? undefined : 1}
         >
           {isEmpty ? "Aula vazia" : subject}
         </Text>
 
-                {!isEmpty ? (
+        {!isEmpty && teacher ? (
           <View className="flex-row items-center mt-0.5 gap-1">
             <User
               size={13}
@@ -85,6 +102,7 @@ export function ScheduleItem({
             </Text>
           </View>
         ) : null}
+        {children}
       </View>
 
       <View className="shrink-0 max-w-[72px] items-end">
@@ -96,12 +114,12 @@ export function ScheduleItem({
         >
           {location}
         </Text>
-        <Pressable
+        {!hideMore && <Pressable
           onPress={onMorePress}
           style={{ padding: 4 }}
         >
           <Ellipsis size={18} color={accent} />
-        </Pressable>
+        </Pressable>}
       </View>
     </View>
   );
