@@ -53,7 +53,10 @@ export default function Login() {
           />
         </View>
 
-        <Pressable className="mx-5 mt-2 items-start">
+        <Pressable
+          className="mx-5 mt-2 items-start"
+          onPress={() => router.push("/forgotPassword")}
+        >
           <Text variant="caption" className="text-text-accent">
             Esqueci minha senha
           </Text>
