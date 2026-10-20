@@ -2,6 +2,8 @@ import {
   ActivityIndicator,
   Pressable,
   PressableProps,
+  StyleProp,
+  TextStyle,
   Text as RNText,
 } from "react-native";
 import Animated, {
@@ -21,6 +23,7 @@ interface ButtonProps extends PressableProps {
   loading?: boolean;
   children: React.ReactNode;
   className?: string;
+  textStyle?: StyleProp<TextStyle>;
 }
 
 const sizeStyles: Record<Size, { paddingHorizontal: number; paddingVertical: number; borderRadius: number }> = {
@@ -37,6 +40,7 @@ export function Button({
   disabled,
   children,
   style,
+  textStyle,
   ...props
 }: ButtonProps) {
   const { colors } = useAppTheme();
@@ -108,7 +112,7 @@ export function Button({
         {loading ? (
           <ActivityIndicator color={variantStyles.text.color as string} />
         ) : (
-          <RNText style={[{ fontFamily: "Poppins-Regular" }, variantStyles.text]}>
+          <RNText style={[{ fontFamily: "Poppins-Regular" }, variantStyles.text, textStyle]}>
             {children}
           </RNText>
         )}

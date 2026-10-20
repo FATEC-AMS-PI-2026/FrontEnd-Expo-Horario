@@ -18,21 +18,23 @@ export default function Login() {
         className="flex-1 items-center"
         style={{ backgroundColor: colors.background }}
       >
-        <View className="w-full max-w-[400px]">
-        <View className="mt-5 mx-5">
-          <Button
-            className="btn w-26 justify-center align-center"
-            variant="secondary"
-            size="sm"
-            onPress={() => router.back()}
-          >
-            <View className="flex-row gap-1 items-center">
-              <LucideChevronLeft size={24} color={colors.text} />
-              <Text className="text-primary m-0">Voltar</Text>
-            </View>
-          </Button>
-        </View>
+          <View className="mt-5 mx-5 self-start">
+            <Button
+              className="btn w-26 justify-center align-center"
+              variant="secondary"
+              size="sm"
+              onPress={() => router.back()}
+            >
+              <View className="flex-row gap-1 items-center">
+                <LucideChevronLeft size={24} color={colors.text} />
+                <Text style={{ color: colors.text }} className="m-0">
+                  Voltar
+                </Text>
+              </View>
+            </Button>
+          </View>
 
+        <View className="w-full max-w-[400px]">
         <Text variant="heading" className="text-center mt-5">Login</Text>
 
         <Text variant="caption" className="text-center mt-2 mb-10">
