@@ -1,4 +1,6 @@
 import { Button, ScheduleItem, Text } from "@/components";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router, useFocusEffect } from "expo-router";
 import {
     AlertTriangle,
     ChevronDown,
@@ -25,265 +27,10 @@ import {
 } from "react-native";
 import { Sortable, SortableItem } from "react-native-reanimated-dnd";
 import { useAppTheme } from "../../theme/ThemeContext";
+import { loadSchedule, parseAcademicSelection, ScheduleError } from "../../services/schedule";
+import type { ScheduleEntry } from "../../services/schedule";
 
 const USE_NATIVE_DRIVER = Platform.OS !== "web";
-
-type ScheduleEntry = {
-    subject: string;
-    teacher: string;
-    location: string;
-    startTime: string;
-    endTime: string;
-    accentColor: string;
-    day: number;
-    isInterval?: boolean;
-    isEmpty?: boolean;
-};
-
-const SCHEDULE_DATA: ScheduleEntry[] = [
-    {
-        subject: "Projeto Integrador I",
-        teacher: "Glauco Todesco",
-        location: "Lab. 03",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#00695C",
-        day: 1,
-    },
-    {
-        subject: "Projeto Integrador I",
-        teacher: "Glauco Todesco",
-        location: "Lab. 03",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#00695C",
-        day: 1,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#00ACC1",
-        day: 1,
-        isInterval: true,
-    },
-    {
-        subject: "Banco de Dados",
-        teacher: "Renato",
-        location: "Lab. 03",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#1565C0",
-        day: 1,
-    },
-    {
-        subject: "Banco de Dados",
-        teacher: "Renato",
-        location: "Lab. 03",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#1565C0",
-        day: 1,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#00ACC1",
-        day: 1,
-        isInterval: true,
-    },
-    {
-        subject: "Interação Humano Computador",
-        teacher: "Renato",
-        location: "Lab. 03",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#E65100",
-        day: 1,
-    },
-    {
-        subject: "Banco de Dados",
-        teacher: "Renato",
-        location: "Lab. 03",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#E65100",
-        day: 1,
-    },
-    {
-        subject: "Engenharia de Software",
-        teacher: "Mariana Lopes",
-        location: "Sala 12",
-        startTime: "08:00h",
-        endTime: "09:40h",
-        accentColor: "#6A1B9A",
-        day: 0,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "09:40h",
-        endTime: "10:00h",
-        accentColor: "#00ACC1",
-        day: 0,
-        isInterval: true,
-    },
-    {
-        subject: "Programação Web",
-        teacher: "Carlos Mendes",
-        location: "Lab. 02",
-        startTime: "10:00h",
-        endTime: "11:40h",
-        accentColor: "#2E7D32",
-        day: 0,
-    },
-    {
-        subject: "Redes de Computadores",
-        teacher: "Ana Ribeiro",
-        location: "Lab. 01",
-        startTime: "08:00h",
-        endTime: "09:40h",
-        accentColor: "#AD1457",
-        day: 2,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "09:40h",
-        endTime: "10:00h",
-        accentColor: "#00ACC1",
-        day: 2,
-        isInterval: true,
-    },
-    {
-        subject: "Interação Humano Computador",
-        teacher: "Renato",
-        location: "Lab. 03",
-        startTime: "10:00h",
-        endTime: "11:40h",
-        accentColor: "#E65100",
-        day: 2,
-    },
-    {
-        subject: "Sistemas Operacionais",
-        teacher: "Paulo Nunes",
-        location: "Sala 08",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#283593",
-        day: 3,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "15:00h",
-        endTime: "15:20h",
-        accentColor: "#00ACC1",
-        day: 3,
-        isInterval: true,
-    },
-    {
-        subject: "Projeto Integrador II",
-        teacher: "Glauco Todesco",
-        location: "Lab. 03",
-        startTime: "15:20h",
-        endTime: "17:00h",
-        accentColor: "#00695C",
-        day: 3,
-    },
-    {
-        subject: "Banco de Dados II",
-        teacher: "Renato",
-        location: "Lab. 03",
-        startTime: "08:00h",
-        endTime: "09:40h",
-        accentColor: "#1565C0",
-        day: 4,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "09:40h",
-        endTime: "10:00h",
-        accentColor: "#00ACC1",
-        day: 4,
-        isInterval: true,
-    },
-    {
-        subject: "Arquitetura de Computadores",
-        teacher: "Fernanda Alves",
-        location: "Sala 05",
-        startTime: "10:00h",
-        endTime: "11:40h",
-        accentColor: "#EF6C00",
-        day: 4,
-    },
-    {
-        subject: "Análise de Sistemas",
-        teacher: "Mariana Lopes",
-        location: "Sala 12",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#6A1B9A",
-        day: 5,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "15:00h",
-        endTime: "15:20h",
-        accentColor: "#00ACC1",
-        day: 5,
-        isInterval: true,
-    },
-    {
-        subject: "Desenvolvimento Mobile",
-        teacher: "Carlos Mendes",
-        location: "Lab. 02",
-        startTime: "15:20h",
-        endTime: "17:00h",
-        accentColor: "#2E7D32",
-        day: 5,
-    },
-    {
-        subject: "Atividade Complementar",
-        teacher: "Coordenação",
-        location: "Auditório",
-        startTime: "08:00h",
-        endTime: "09:40h",
-        accentColor: "#00838F",
-        day: 6,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "09:40h",
-        endTime: "10:00h",
-        accentColor: "#00ACC1",
-        day: 6,
-        isInterval: true,
-    },
-    {
-        subject: "Estudos Orientados",
-        teacher: "Glauco Todesco",
-        location: "Biblioteca",
-        startTime: "10:00h",
-        endTime: "11:40h",
-        accentColor: "#5D4037",
-        day: 6,
-    },
-];
 
 const DAYS = ["D", "S", "T", "Q", "Q", "S", "S"];
 const DAY_NAMES = [
@@ -305,6 +52,7 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 const SORTABLE_ITEM_HEIGHT = 67;
 
 export const ERROR_MESSAGES: Record<string | number, string> = {
+    SELECTION_REQUIRED: "Escolha seu curso e sua turma para consultar os horários.",
     400: "Requisição inválida. Verifique os dados fornecidos e tente novamente.",
     401: "Sua sessão expirou. Faça login novamente para acessar seus horários.",
     403: "Você não tem permissão para acessar esta grade de aulas.",
@@ -327,9 +75,10 @@ export const getErrorMessage = (code?: string | number): string => {
 interface ErrorStateProps {
     errorCode: string | number;
     onRetry: () => void;
+    actionLabel?: string;
 }
 
-export function ErrorState({ errorCode, onRetry }: ErrorStateProps) {
+export function ErrorState({ errorCode, onRetry, actionLabel = "Tentar novamente" }: ErrorStateProps) {
     const { colors } = useAppTheme();
     const message = getErrorMessage(errorCode);
 
@@ -380,7 +129,7 @@ export function ErrorState({ errorCode, onRetry }: ErrorStateProps) {
                     className="font-medium"
                     style={{ color: colors.background }}
                 >
-                    Tentar novamente
+                    {actionLabel}
                 </Text>
             </Pressable>
         </View>
@@ -463,8 +212,8 @@ function SelectionActions({
 
 export default function Subjects() {
     const { colors, darkMode } = useAppTheme();
-    const [schedule, setSchedule] = useState(SCHEDULE_DATA);
-    const [activeDay, setActiveDay] = useState(1);
+    const [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
+    const [activeDay, setActiveDay] = useState(() => new Date().getDay());
     const [menuItemIndex, setMenuItemIndex] = useState<number | null>(null);
     const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
     const [editingItemIndex, setEditingItemIndex] = useState<number | null>(
@@ -485,49 +234,43 @@ export default function Subjects() {
     const isDayTransitioning = useRef(false);
     const activeDayRef = useRef(activeDay);
 
+    const [selectionLabel, setSelectionLabel] = useState("");
+    const requestRef = useRef<AbortController | null>(null);
+
     const fetchScheduleData = useCallback(async () => {
+        requestRef.current?.abort();
+        const controller = new AbortController();
+        requestRef.current = controller;
         setIsLoading(true);
         setErrorCode(null);
-
+        setSchedule([]);
+        setSelectionLabel("");
+        setSelectedIndices([]);
+        setMenuItemIndex(null);
+        setSelectionActionsAnchorIndex(null);
+        setIsAddSheetOpen(false);
+        setEditingItemIndex(null);
         try {
-            {
-                /* Use a função abaixo para simular um erro*/
-            }
-            /*
-                const simulatedError: number | null = 500;
-                if (simulatedError) {
-                  setErrorCode(simulatedError);
-                  return;
-                }
-                */
-
-            await new Promise((resolve) => setTimeout(resolve, 600));
-
-            setSchedule(SCHEDULE_DATA);
-        } catch (error: unknown) {
-            const status =
-                typeof error === "object" &&
-                error !== null &&
-                "response" in error
-                    ? (error as { response?: { status?: string | number } })
-                          .response?.status
-                    : undefined;
-            setErrorCode(
-                status ??
-                    (typeof error === "object" &&
-                    error !== null &&
-                    "message" in error
-                        ? String((error as { message?: string }).message)
-                        : "NETWORK_ERROR"),
-            );
+            const saved = await AsyncStorage.getItem("gini:selecaoAcademica");
+            if (controller.signal.aborted) return;
+            const selection = parseAcademicSelection(saved);
+            const result = await loadSchedule(selection, controller.signal);
+            if (controller.signal.aborted) return;
+            setSchedule(result.entries);
+            setSelectionLabel(result.label);
+        } catch (error) {
+            if (controller.signal.aborted) return;
+            setErrorCode(error instanceof ScheduleError ? error.code
+                : error instanceof TypeError ? "NETWORK_ERROR" : "UNKNOWN");
         } finally {
-            setIsLoading(false);
+            if (!controller.signal.aborted) setIsLoading(false);
         }
     }, []);
 
-    useEffect(() => {
-        fetchScheduleData();
-    }, [fetchScheduleData]);
+    useFocusEffect(useCallback(() => {
+        void fetchScheduleData();
+        return () => requestRef.current?.abort();
+    }, [fetchScheduleData]));
 
     const visibleItems = schedule
         .map((item, index) => ({ item, index }))
@@ -825,7 +568,11 @@ export default function Subjects() {
     }
 
     if (errorCode !== null) {
-        return <ErrorState errorCode={errorCode} onRetry={fetchScheduleData} />;
+        return <ErrorState errorCode={errorCode}
+            actionLabel={errorCode === "SELECTION_REQUIRED" ? "Escolher curso e turma" : undefined}
+            onRetry={errorCode === "SELECTION_REQUIRED"
+                ? () => router.push("/chooseCourse")
+                : () => void fetchScheduleData()} />;
     }
 
     return (
@@ -833,6 +580,9 @@ export default function Subjects() {
             className="flex-1 pt-4"
             style={{ backgroundColor: colors.background }}
         >
+            <Text variant="caption" className="px-4 mb-3" style={{ color: colors.textMuted }}>
+                {selectionLabel}
+            </Text>
             <View className="flex-row p-1 px-3 gap-1 w-full">
                 {DAYS.map((day, index) => (
                     <Pressable
@@ -880,7 +630,13 @@ export default function Subjects() {
                 className="flex-1"
                 style={{ transform: [{ translateX }] }}
             >
-                <Sortable
+                {visibleRows.length === 0 ? (
+                    <View className="flex-1 items-center justify-center px-6">
+                        <Text className="text-center" style={{ color: colors.textMuted }}>
+                            Nenhuma aula cadastrada para esta turma em {DAY_NAMES[activeDay].toLowerCase()}.
+                        </Text>
+                    </View>
+                ) : <Sortable
                     data={visibleRows}
                     itemHeight={SORTABLE_ITEM_HEIGHT}
                     style={{ flex: 1, backgroundColor: colors.background }}
@@ -898,7 +654,7 @@ export default function Subjects() {
                             {renderScheduleRow(row)}
                         </SortableItem>
                     )}
-                />
+                />}
             </Animated.View>
 
             <View className="flex-row items-center justify-between px-6 py-4">
