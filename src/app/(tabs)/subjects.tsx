@@ -1,310 +1,20 @@
-import { Button, ScheduleItem, Text } from "@/components";
-import {
-    AlertTriangle,
-    ChevronDown,
-    ChevronLeft,
-    ChevronRight,
-    Ellipsis,
-    Plus,
-    RefreshCw,
-    Trash,
-    X,
-} from "lucide-react-native";
-import { useCallback, useEffect, useRef, useState } from "react";
-import {
-    ActivityIndicator,
-    Animated,
-    Dimensions,
-    Easing,
-    LayoutAnimation,
-    Modal,
-    PanResponder,
-    Platform,
-    Pressable,
-    View,
-} from "react-native";
-import { Sortable, SortableItem } from "react-native-reanimated-dnd";
+import { Button, ScheduleItem, SearchBar, Text } from "@/components";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router, useFocusEffect } from "expo-router";
+import { AlertTriangle, Plus, RefreshCw, X } from "lucide-react-native";
+import { useCallback, useRef, useState } from "react";
+import { ActivityIndicator, Modal, Pressable, ScrollView, View } from "react-native";
 import { useAppTheme } from "../../theme/ThemeContext";
-
-const USE_NATIVE_DRIVER = Platform.OS !== "web";
-
-type ScheduleEntry = {
-    subject: string;
-    teacher: string;
-    location: string;
-    startTime: string;
-    endTime: string;
-    accentColor: string;
-    day: number;
-    isInterval?: boolean;
-    isEmpty?: boolean;
-};
-
-const SCHEDULE_DATA: ScheduleEntry[] = [
-    {
-        subject: "Projeto Integrador I",
-        teacher: "Glauco Todesco",
-        location: "Lab. 03",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#00695C",
-        day: 1,
-    },
-    {
-        subject: "Projeto Integrador I",
-        teacher: "Glauco Todesco",
-        location: "Lab. 03",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#00695C",
-        day: 1,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#00ACC1",
-        day: 1,
-        isInterval: true,
-    },
-    {
-        subject: "Banco de Dados",
-        teacher: "Renato",
-        location: "Lab. 03",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#1565C0",
-        day: 1,
-    },
-    {
-        subject: "Banco de Dados",
-        teacher: "Renato",
-        location: "Lab. 03",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#1565C0",
-        day: 1,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#00ACC1",
-        day: 1,
-        isInterval: true,
-    },
-    {
-        subject: "Interação Humano Computador",
-        teacher: "Renato",
-        location: "Lab. 03",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#E65100",
-        day: 1,
-    },
-    {
-        subject: "Banco de Dados",
-        teacher: "Renato",
-        location: "Lab. 03",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#E65100",
-        day: 1,
-    },
-    {
-        subject: "Engenharia de Software",
-        teacher: "Mariana Lopes",
-        location: "Sala 12",
-        startTime: "08:00h",
-        endTime: "09:40h",
-        accentColor: "#6A1B9A",
-        day: 0,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "09:40h",
-        endTime: "10:00h",
-        accentColor: "#00ACC1",
-        day: 0,
-        isInterval: true,
-    },
-    {
-        subject: "Programação Web",
-        teacher: "Carlos Mendes",
-        location: "Lab. 02",
-        startTime: "10:00h",
-        endTime: "11:40h",
-        accentColor: "#2E7D32",
-        day: 0,
-    },
-    {
-        subject: "Redes de Computadores",
-        teacher: "Ana Ribeiro",
-        location: "Lab. 01",
-        startTime: "08:00h",
-        endTime: "09:40h",
-        accentColor: "#AD1457",
-        day: 2,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "09:40h",
-        endTime: "10:00h",
-        accentColor: "#00ACC1",
-        day: 2,
-        isInterval: true,
-    },
-    {
-        subject: "Interação Humano Computador",
-        teacher: "Renato",
-        location: "Lab. 03",
-        startTime: "10:00h",
-        endTime: "11:40h",
-        accentColor: "#E65100",
-        day: 2,
-    },
-    {
-        subject: "Sistemas Operacionais",
-        teacher: "Paulo Nunes",
-        location: "Sala 08",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#283593",
-        day: 3,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "15:00h",
-        endTime: "15:20h",
-        accentColor: "#00ACC1",
-        day: 3,
-        isInterval: true,
-    },
-    {
-        subject: "Projeto Integrador II",
-        teacher: "Glauco Todesco",
-        location: "Lab. 03",
-        startTime: "15:20h",
-        endTime: "17:00h",
-        accentColor: "#00695C",
-        day: 3,
-    },
-    {
-        subject: "Banco de Dados II",
-        teacher: "Renato",
-        location: "Lab. 03",
-        startTime: "08:00h",
-        endTime: "09:40h",
-        accentColor: "#1565C0",
-        day: 4,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "09:40h",
-        endTime: "10:00h",
-        accentColor: "#00ACC1",
-        day: 4,
-        isInterval: true,
-    },
-    {
-        subject: "Arquitetura de Computadores",
-        teacher: "Fernanda Alves",
-        location: "Sala 05",
-        startTime: "10:00h",
-        endTime: "11:40h",
-        accentColor: "#EF6C00",
-        day: 4,
-    },
-    {
-        subject: "Análise de Sistemas",
-        teacher: "Mariana Lopes",
-        location: "Sala 12",
-        startTime: "13:20h",
-        endTime: "15:00h",
-        accentColor: "#6A1B9A",
-        day: 5,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "15:00h",
-        endTime: "15:20h",
-        accentColor: "#00ACC1",
-        day: 5,
-        isInterval: true,
-    },
-    {
-        subject: "Desenvolvimento Mobile",
-        teacher: "Carlos Mendes",
-        location: "Lab. 02",
-        startTime: "15:20h",
-        endTime: "17:00h",
-        accentColor: "#2E7D32",
-        day: 5,
-    },
-    {
-        subject: "Atividade Complementar",
-        teacher: "Coordenação",
-        location: "Auditório",
-        startTime: "08:00h",
-        endTime: "09:40h",
-        accentColor: "#00838F",
-        day: 6,
-    },
-    {
-        subject: "Intervalo",
-        teacher: "",
-        location: "",
-        startTime: "09:40h",
-        endTime: "10:00h",
-        accentColor: "#00ACC1",
-        day: 6,
-        isInterval: true,
-    },
-    {
-        subject: "Estudos Orientados",
-        teacher: "Glauco Todesco",
-        location: "Biblioteca",
-        startTime: "10:00h",
-        endTime: "11:40h",
-        accentColor: "#5D4037",
-        day: 6,
-    },
-];
+import { loadSchedule, loadScheduleOptions, parseAcademicSelection, ScheduleError } from "../../services/schedule";
+import type { AcademicSelection, ScheduleEntry, ScheduleSlot, ScheduleOffering } from "../../services/schedule";
+import { addOffering, daySchedule, emptyLesson, offeringConflicts, overlaps, personalScheduleKey, releaseAndAddOffering, restorePersonalSchedule, serializePersonalSchedule } from "../../services/personalSchedule";
 
 const DAYS = ["D", "S", "T", "Q", "Q", "S", "S"];
-const DAY_NAMES = [
-    "Domingo",
-    "Segunda feira",
-    "Terça feira",
-    "Quarta feira",
-    "Quinta feira",
-    "Sexta feira",
-    "Sábado",
-];
-const SUBJECTS = [
-    "Projeto Integrador",
-    "Banco de Dados",
-    "Interação Humano Computador",
-];
-const LESSONS = [1, 2, 3, 4, 5, 6];
-const SCREEN_WIDTH = Dimensions.get("window").width;
-const SORTABLE_ITEM_HEIGHT = 67;
+const DAY_NAMES = ["Domingo", "Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"];
+const normalize = (text: string) => text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 
 export const ERROR_MESSAGES: Record<string | number, string> = {
+    SELECTION_REQUIRED: "Escolha seu curso e sua turma para consultar os horários.",
     400: "Requisição inválida. Verifique os dados fornecidos e tente novamente.",
     401: "Sua sessão expirou. Faça login novamente para acessar seus horários.",
     403: "Você não tem permissão para acessar esta grade de aulas.",
@@ -327,9 +37,10 @@ export const getErrorMessage = (code?: string | number): string => {
 interface ErrorStateProps {
     errorCode: string | number;
     onRetry: () => void;
+    actionLabel?: string;
 }
 
-export function ErrorState({ errorCode, onRetry }: ErrorStateProps) {
+export function ErrorState({ errorCode, onRetry, actionLabel = "Tentar novamente" }: ErrorStateProps) {
     const { colors } = useAppTheme();
     const message = getErrorMessage(errorCode);
 
@@ -380,805 +91,269 @@ export function ErrorState({ errorCode, onRetry }: ErrorStateProps) {
                     className="font-medium"
                     style={{ color: colors.background }}
                 >
-                    Tentar novamente
+                    {actionLabel}
                 </Text>
             </Pressable>
         </View>
     );
 }
 
-interface ScheduleRow {
-    id: string;
-    item: ScheduleEntry;
-    sourceIndex: number;
-}
-
-interface SelectionActionsProps {
-    isVisible: boolean;
-    onRemove: () => void;
-    onCancel: () => void;
-    onHidden: () => void;
-}
-
-function SelectionActions({
-    isVisible,
-    onRemove,
-    onCancel,
-    onHidden,
-}: SelectionActionsProps) {
-    const { colors } = useAppTheme();
-    const progress = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-        Animated.spring(progress, {
-            toValue: isVisible ? 1 : 0,
-            useNativeDriver: USE_NATIVE_DRIVER,
-            damping: 18,
-            stiffness: 180,
-        }).start(({ finished }) => {
-            if (finished && !isVisible) onHidden();
-        });
-    }, [isVisible, onHidden, progress]);
-
-    return (
-        <Animated.View
-            pointerEvents={isVisible ? "auto" : "none"}
-            style={{
-                backgroundColor: colors.background,
-                opacity: progress,
-                transform: [
-                    {
-                        translateY: progress.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [-12, 0],
-                        }),
-                    },
-                    {
-                        scale: progress.interpolate({
-                            inputRange: [0, 1],
-                            outputRange: [0.94, 1],
-                        }),
-                    },
-                ],
-            }}
-            className="mb-2 flex-row items-center justify-between rounded-xl py-2"
-        >
-            <Pressable
-                className="items-center justify-center rounded-full py-2 px-3"
-                style={{ backgroundColor: colors.surfaceAlt }}
-                onPress={onCancel}
-            >
-                <Text variant="body">Cancelar</Text>
-            </Pressable>
-            <Pressable
-                className="rounded-lg px-3 py-2"
-                style={{ backgroundColor: colors.danger }}
-                onPress={onRemove}
-            >
-                <Trash size={24} color={colors.background} />
-            </Pressable>
-        </Animated.View>
-    );
-}
-
 export default function Subjects() {
     const { colors, darkMode } = useAppTheme();
-    const [schedule, setSchedule] = useState(SCHEDULE_DATA);
-    const [activeDay, setActiveDay] = useState(1);
-    const [menuItemIndex, setMenuItemIndex] = useState<number | null>(null);
-    const [isAddSheetOpen, setIsAddSheetOpen] = useState(false);
-    const [editingItemIndex, setEditingItemIndex] = useState<number | null>(
-        null,
-    );
-    const [selectedSubject, setSelectedSubject] = useState(SUBJECTS[0]);
-    const [selectedDay, setSelectedDay] = useState(activeDay);
-    const [selectedLesson, setSelectedLesson] = useState(4);
-    const [isSubjectPickerOpen, setIsSubjectPickerOpen] = useState(false);
-    const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
-    const [selectionActionsAnchorIndex, setSelectionActionsAnchorIndex] =
-        useState<number | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [schedule, setSchedule] = useState<ScheduleEntry[]>([]);
+    const [offerings, setOfferings] = useState<ScheduleOffering[]>([]);
+    const [slots, setSlots] = useState<ScheduleSlot[]>([]);
+    const [label, setLabel] = useState("");
+    const [activeDay, setActiveDay] = useState(() => new Date().getDay());
+    const [loading, setLoading] = useState(true);
     const [errorCode, setErrorCode] = useState<string | number | null>(null);
-    const dayTransitionX = useRef(new Animated.Value(0)).current;
-    const swipeX = useRef(new Animated.Value(0)).current;
-    const translateX = useRef(Animated.add(dayTransitionX, swipeX)).current;
-    const isDayTransitioning = useRef(false);
-    const activeDayRef = useRef(activeDay);
+    const [saveError, setSaveError] = useState<string | null>(null);
+    const [saving, setSaving] = useState(false);
+    const [menuEntry, setMenuEntry] = useState<ScheduleEntry | null>(null);
+    const [editorOpen, setEditorOpen] = useState(false);
+    const [targetEntry, setTargetEntry] = useState<ScheduleEntry | null>(null);
+    const [offeringKey, setOfferingKey] = useState<string | null>(null);
+    const [search, setSearch] = useState("");
+    const [period, setPeriod] = useState<number | null>(null);
+    const [conflicts, setConflicts] = useState<ScheduleEntry[]>([]);
+    const requestRef = useRef<AbortController | null>(null);
+    const baseRef = useRef<ScheduleEntry[]>([]);
+    const selectionRef = useRef<AcademicSelection | null>(null);
+    const savingRef = useRef(false);
 
-    const fetchScheduleData = useCallback(async () => {
-        setIsLoading(true);
+    const load = useCallback(async () => {
+        requestRef.current?.abort();
+        const controller = new AbortController();
+        requestRef.current = controller;
+        selectionRef.current = null;
+        setLoading(true);
         setErrorCode(null);
-
+        setSaveError(null);
+        setSchedule([]);
+        setMenuEntry(null);
+        setEditorOpen(false);
+        setConflicts([]);
         try {
-            {
-                /* Use a função abaixo para simular um erro*/
+            const saved = await AsyncStorage.getItem("gini:selecaoAcademica");
+            if (controller.signal.aborted) return;
+            const selection = parseAcademicSelection(saved);
+            const [result, options, personal] = await Promise.all([
+                loadSchedule(selection, controller.signal),
+                loadScheduleOptions(selection, controller.signal),
+                AsyncStorage.getItem(personalScheduleKey(selection)),
+            ]);
+            if (controller.signal.aborted) return;
+            let entries = result.entries;
+            try {
+                const restored = restorePersonalSchedule(entries, personal, options.offerings);
+                entries = restored.entries;
+                if (restored.migrated) setSaveError("Escolha novamente suas DPs para usar as aulas e os horários das turmas de origem. As exclusões foram mantidas.");
+                else if (restored.unavailableCount) setSaveError("Algumas aulas de DP não estão mais disponíveis ou conflitam com sua grade atual. Confira as ofertas novamente.");
+            } catch {
+                setSaveError("Não foi possível ler sua personalização. Exibindo a grade padrão.");
             }
-            /*
-                const simulatedError: number | null = 500;
-                if (simulatedError) {
-                  setErrorCode(simulatedError);
-                  return;
-                }
-                */
-
-            await new Promise((resolve) => setTimeout(resolve, 600));
-
-            setSchedule(SCHEDULE_DATA);
-        } catch (error: unknown) {
-            const status =
-                typeof error === "object" &&
-                error !== null &&
-                "response" in error
-                    ? (error as { response?: { status?: string | number } })
-                          .response?.status
-                    : undefined;
-            setErrorCode(
-                status ??
-                    (typeof error === "object" &&
-                    error !== null &&
-                    "message" in error
-                        ? String((error as { message?: string }).message)
-                        : "NETWORK_ERROR"),
-            );
+            baseRef.current = result.entries;
+            selectionRef.current = selection;
+            setSchedule(entries);
+            setLabel(result.label);
+            setOfferings(options.offerings);
+            setSlots(options.slots);
+        } catch (error) {
+            if (!controller.signal.aborted) setErrorCode(error instanceof ScheduleError ? error.code
+                : error instanceof TypeError ? "NETWORK_ERROR" : "UNKNOWN");
         } finally {
-            setIsLoading(false);
+            if (!controller.signal.aborted) setLoading(false);
         }
     }, []);
 
-    useEffect(() => {
-        fetchScheduleData();
-    }, [fetchScheduleData]);
+    useFocusEffect(useCallback(() => {
+        void load();
+        return () => requestRef.current?.abort();
+    }, [load]));
 
-    const visibleItems = schedule
-        .map((item, index) => ({ item, index }))
-        .filter(({ item }) => item.day === activeDay);
-    const visibleRows: ScheduleRow[] = visibleItems.map(({ item, index }) => ({
-        id: String(index),
-        item,
-        sourceIndex: index,
-    }));
-    const isSelectedItemEmpty =
-        menuItemIndex !== null && schedule[menuItemIndex]?.isEmpty === true;
-    const isSelectedItemInterval =
-        menuItemIndex !== null && schedule[menuItemIndex]?.isInterval === true;
-    const isSelectionMode = selectedIndices.length > 0;
-    const firstSelectedIndex = visibleItems.find(({ index }) =>
-        selectedIndices.includes(index),
-    )?.index;
-    const selectionActionsIndex =
-        firstSelectedIndex ?? selectionActionsAnchorIndex;
-
-    const toggleSelection = (index: number) => {
-        // Garante que intervalos não possam ser selecionados para remoção em lote
-        if (schedule[index]?.isInterval) return;
-
-        setSelectedIndices((current) =>
-            current.includes(index)
-                ? current.filter((selectedIndex) => selectedIndex !== index)
-                : (() => {
-                      if (current.length === 0)
-                          setSelectionActionsAnchorIndex(index);
-                      return [...current, index];
-                  })(),
-        );
-    };
-
-    const clearSelection = () => setSelectedIndices([]);
-
-    const finishSelectionActions = useCallback(
-        () => setSelectionActionsAnchorIndex(null),
-        [],
-    );
-
-    const changeDay = useCallback(
-        (nextDay: number, direction?: number) => {
-            if (isDayTransitioning.current || nextDay === activeDayRef.current)
-                return;
-
-            const dir = direction ?? (nextDay > activeDayRef.current ? -1 : 1);
-            isDayTransitioning.current = true;
-
-            Animated.timing(dayTransitionX, {
-                toValue: SCREEN_WIDTH * dir,
-                duration: 280,
-                easing: Easing.out(Easing.cubic),
-                useNativeDriver: USE_NATIVE_DRIVER,
-            }).start(() => {
-                setActiveDay(nextDay);
-                activeDayRef.current = nextDay;
-                dayTransitionX.setValue(-SCREEN_WIDTH * dir);
-
-                Animated.timing(dayTransitionX, {
-                    toValue: 0,
-                    duration: 280,
-                    easing: Easing.out(Easing.cubic),
-                    useNativeDriver: USE_NATIVE_DRIVER,
-                }).start(() => {
-                    isDayTransitioning.current = false;
-                });
-            });
-        },
-        [dayTransitionX],
-    );
-
-    const daySwipeResponder = useRef(
-        PanResponder.create({
-            onMoveShouldSetPanResponder: (_, gesture) =>
-                Math.abs(gesture.dx) > 12 &&
-                Math.abs(gesture.dx) > Math.abs(gesture.dy),
-
-            onPanResponderMove: (_, gesture) => {
-                swipeX.setValue(gesture.dx);
-            },
-
-            onPanResponderRelease: (_, gesture) => {
-                const shouldChangeDay =
-                    Math.abs(gesture.dx) > SCREEN_WIDTH * 0.2;
-                const currentDay = activeDayRef.current;
-                const nextDay =
-                    gesture.dx < 0 ? currentDay + 1 : currentDay - 1;
-
-                if (!shouldChangeDay || nextDay < 0 || nextDay >= DAYS.length) {
-                    Animated.spring(swipeX, {
-                        toValue: 0,
-                        useNativeDriver: USE_NATIVE_DRIVER,
-                        damping: 20,
-                        stiffness: 200,
-                        mass: 0.9,
-                    }).start();
-                    return;
-                }
-
-                const startOffset = gesture.dx;
-                swipeX.setValue(0);
-                dayTransitionX.setValue(startOffset);
-                changeDay(nextDay, gesture.dx < 0 ? -1 : 1);
-            },
-
-            onPanResponderTerminate: () => {
-                Animated.spring(swipeX, {
-                    toValue: 0,
-                    useNativeDriver: USE_NATIVE_DRIVER,
-                    damping: 20,
-                    stiffness: 200,
-                }).start();
-            },
-        }),
-    ).current;
-
-    const removeSelectedItems = () => {
-        LayoutAnimation.configureNext(LayoutAnimation.Presets.spring);
-        setSchedule((current) =>
-            current.map((item, index) =>
-                selectedIndices.includes(index) && !item.isInterval
-                    ? {
-                          ...item,
-                          subject: "Aula vazia",
-                          teacher: "",
-                          location: "",
-                          accentColor: "#B0BEC5",
-                          isEmpty: true,
-                      }
-                    : item,
-            ),
-        );
-        clearSelection();
-    };
-
-    const openAddSheet = () => {
-        setEditingItemIndex(null);
-        setSelectedSubject(SUBJECTS[0]);
-        setSelectedDay(activeDay);
-        setSelectedLesson(4);
-        setIsSubjectPickerOpen(false);
-        setIsAddSheetOpen(true);
-    };
-
-    const openEditSheet = () => {
-        if (menuItemIndex === null) return;
-        const item = schedule[menuItemIndex];
-        if (item.isInterval) return;
-
-        setEditingItemIndex(menuItemIndex);
-        setSelectedSubject(item.isEmpty ? SUBJECTS[0] : item.subject);
-        setSelectedDay(item.day);
-        setSelectedLesson(4);
-        setMenuItemIndex(null);
-        setIsSubjectPickerOpen(false);
-        setIsAddSheetOpen(true);
-    };
-
-    const saveScheduleItem = () => {
-        const nextItem: ScheduleEntry = {
-            subject: selectedSubject,
-            teacher:
-                selectedSubject === "Projeto Integrador"
-                    ? "Glauco Todesco"
-                    : "Renato",
-            location: "Lab. 03",
-            startTime: "13:20h",
-            endTime: "15:00h",
-            accentColor:
-                selectedSubject === "Banco de Dados" ? "#1565C0" : "#00695C",
-            day: selectedDay,
-        };
-
-        setSchedule((current) => {
-            if (editingItemIndex === null) return [...current, nextItem];
-            return current.map((item, index) =>
-                index === editingItemIndex ? nextItem : item,
-            );
-        });
-        setIsAddSheetOpen(false);
-    };
-
-    const deleteScheduleItem = () => {
-        if (menuItemIndex === null) return;
-        if (schedule[menuItemIndex]?.isInterval) return;
-
-        setSchedule((current) =>
-            current.map((item, index) =>
-                index === menuItemIndex
-                    ? {
-                          ...item,
-                          subject: "Aula vazia",
-                          teacher: "",
-                          location: "",
-                          accentColor: "#B0BEC5",
-                          isEmpty: true,
-                      }
-                    : item,
-            ),
-        );
-        setMenuItemIndex(null);
-    };
-
-    const reorderVisibleItems = (allPositions?: Record<string, number>) => {
-        if (!allPositions) return;
-
-        const reorderedItems = [...visibleRows]
-            .sort(
-                (a, b) => (allPositions[a.id] ?? 0) - (allPositions[b.id] ?? 0),
-            )
-            .map(({ item }) => item);
-        const visibleIndexes = visibleRows.map(
-            ({ sourceIndex }) => sourceIndex,
-        );
-    };
-
-    const renderScheduleRow = (row: ScheduleRow) => {
-        const { item, sourceIndex } = row;
-
-        return (
-            <View className="mb-1.5">
-                {selectionActionsIndex === sourceIndex && (
-                    <SelectionActions
-                        isVisible={isSelectionMode}
-                        onRemove={removeSelectedItems}
-                        onCancel={clearSelection}
-                        onHidden={finishSelectionActions}
-                    />
-                )}
-                {item.isInterval ? (
-                    <View
-                        className="flex-row items-center rounded-xl px-3 py-3 mt-1.5 overflow-hidden"
-                        style={{ backgroundColor: colors.surfaceAlt }}
-                    >
-                        <View className="w-[58px] shrink-0 mr-1">
-                            <Text
-                                variant="caption"
-                                className="leading-4"
-                                style={{ color: colors.textMuted }}
-                            >
-                                {item.startTime}
-                            </Text>
-                            <Text
-                                variant="caption"
-                                className="mt-1.5 leading-4"
-                                style={{ color: colors.textMuted }}
-                            >
-                                {item.endTime}
-                            </Text>
-                        </View>
-                        <View className="flex-1 min-w-0 pr-1">
-                            <Text variant="body" className="font-medium">
-                                {item.subject}
-                            </Text>
-                        </View>
-                    </View>
-                ) : (
-                    <ScheduleItem
-                        startTime={item.startTime}
-                        endTime={item.endTime}
-                        subject={item.subject}
-                        teacher={item.teacher}
-                        location={item.location}
-                        accentColor={
-                            item.isEmpty
-                                ? colors.border
-                                : darkMode
-                                  ? colors.accent
-                                  : item.accentColor
-                        }
-                        isEmpty={item.isEmpty}
-                        isSelected={selectedIndices.includes(sourceIndex)}
-                        onPress={() =>
-                            isSelectionMode && toggleSelection(sourceIndex)
-                        }
-                        onLongPress={() => toggleSelection(sourceIndex)}
-                        onMorePress={() => setMenuItemIndex(sourceIndex)}
-                    />
-                )}
-            </View>
-        );
-    };
-
-    if (isLoading) {
-        return (
-            <View
-                className="flex-1 items-center justify-center"
-                style={{ backgroundColor: colors.background }}
-            >
-                <ActivityIndicator size="large" color={colors.accent} />
-            </View>
-        );
+    async function saveEntries(next: ScheduleEntry[]): Promise<boolean> {
+        const selection = selectionRef.current;
+        if (!selection || savingRef.current) return false;
+        savingRef.current = true;
+        setSaving(true);
+        setSaveError(null);
+        try {
+            await AsyncStorage.setItem(personalScheduleKey(selection), serializePersonalSchedule(baseRef.current, next));
+            if (selectionRef.current !== selection || requestRef.current?.signal.aborted) return false;
+            setSchedule(next);
+            return true;
+        } catch {
+            if (selectionRef.current === selection) setSaveError("Não foi possível salvar a alteração. Tente novamente.");
+            return false;
+        } finally {
+            savingRef.current = false;
+            setSaving(false);
+        }
     }
 
-    if (errorCode !== null) {
-        return <ErrorState errorCode={errorCode} onRetry={fetchScheduleData} />;
+    function closeEditor() {
+        if (savingRef.current) return;
+        setMenuEntry(null);
+        setEditorOpen(false);
+        setConflicts([]);
     }
+
+    function openEditor(entry?: ScheduleEntry) {
+        if (savingRef.current) return;
+        setTargetEntry(entry ?? null);
+        setOfferingKey(null);
+        setSearch("");
+        setPeriod(null);
+        setConflicts([]);
+        setSaveError(null);
+        setMenuEntry(null);
+        setEditorOpen(true);
+    }
+
+    async function removeLesson(entry: ScheduleEntry) {
+        if (entry.isEmpty) return;
+        if (await saveEntries(schedule.map((item) => item.id === entry.id ? emptyLesson(item) : item))) setMenuEntry(null);
+    }
+
+    async function saveOffering(releaseConflicts = false) {
+        const offering = offerings.find((item) => item.key === offeringKey);
+        if (!offering || savingRef.current) return;
+        const occupied = offeringConflicts(schedule, offering);
+        if (occupied.length && !releaseConflicts) {
+            setConflicts(occupied);
+            return;
+        }
+        try {
+            const next = releaseConflicts ? releaseAndAddOffering(schedule, offering) : addOffering(schedule, offering);
+            if (await saveEntries(next)) {
+                setActiveDay(targetEntry?.day ?? offering.entries[0].day);
+                setEditorOpen(false);
+                setConflicts([]);
+            }
+        } catch {
+            setSaveError("A oferta possui encontros sobrepostos. Escolha outra oferta.");
+        }
+    }
+
+    const rows = daySchedule(schedule, slots, activeDay);
+    const periods = [...new Set(offerings.map((offering) => offering.periodo))].sort((a, b) => a - b);
+    const filteredOfferings = offerings.filter((offering) =>
+        !offering.entries.every((entry) => schedule.some((item) => !item.isEmpty && item.sourceAllocationId === entry.sourceAllocationId)) &&
+        (period === null || offering.periodo === period) && normalize(offering.subject).includes(normalize(search)) &&
+        (!targetEntry || offering.entries.some((entry) => overlaps(entry, targetEntry))));
+    const selectedOffering = filteredOfferings.find((offering) => offering.key === offeringKey);
+    const periodLabel = (offering: ScheduleOffering) => `${offering.periodo}º ${offering.periodicidade?.toLowerCase() === "anual" ? "ano" : "semestre"}`;
+
+    if (loading) return <View className="flex-1 items-center justify-center" style={{ backgroundColor: colors.background }}><ActivityIndicator size="large" color={colors.accent} /></View>;
+    if (errorCode !== null) return <ErrorState errorCode={errorCode}
+        actionLabel={errorCode === "SELECTION_REQUIRED" ? "Escolher curso e turma" : undefined}
+        onRetry={errorCode === "SELECTION_REQUIRED" ? () => router.push("/chooseCourse") : () => void load()} />;
 
     return (
-        <View
-            className="flex-1 pt-4"
-            style={{ backgroundColor: colors.background }}
-        >
+        <View className="flex-1 pt-4" style={{ backgroundColor: colors.background }}>
+            <Text variant="caption" className="px-4 mb-3" style={{ color: colors.textMuted }}>{label}</Text>
             <View className="flex-row p-1 px-3 gap-1 w-full">
-                {DAYS.map((day, index) => (
-                    <Pressable
-                        key={index}
-                        onPress={() => changeDay(index)}
-                        className="flex-1 p-2 px-4 border rounded-md items-center"
-                        style={{
-                            borderColor: colors.border,
-                            backgroundColor:
-                                index === activeDay
-                                    ? colors.accent
-                                    : colors.surface,
-                        }}
-                    >
-                        <Text
-                            variant="label"
-                            style={{
-                                color:
-                                    index === activeDay
-                                        ? colors.background
-                                        : colors.text,
-                            }}
-                        >
-                            {day}
-                        </Text>
+                {DAYS.map((letter, index) => (
+                    <Pressable key={index} accessibilityRole="button" accessibilityLabel={DAY_NAMES[index]}
+                        accessibilityState={{ selected: activeDay === index }} onPress={() => setActiveDay(index)}
+                        className="flex-1 p-2 border rounded-md items-center"
+                        style={{ borderColor: colors.border, backgroundColor: activeDay === index ? colors.accent : colors.surface }}>
+                        <Text variant="label" style={{ color: activeDay === index ? colors.background : colors.text }}>{letter}</Text>
                     </Pressable>
                 ))}
             </View>
-
             <View className="flex-row items-center justify-between px-4 pt-4 pb-3">
                 <Text variant="heading">{DAY_NAMES[activeDay]}</Text>
-                <Button
-                    variant="ghost"
-                    size="xs"
-                    className="w-8 h-8 rounded-full"
-                    style={{ backgroundColor: colors.surfaceAlt }}
-                    onPress={openAddSheet}
-                >
-                    <Plus color={colors.text} />
-                </Button>
+                <Pressable accessibilityRole="button" accessibilityLabel="Adicionar DP" disabled={saving}
+                    onPress={() => openEditor()} style={{ padding: 10, borderRadius: 24, backgroundColor: colors.surfaceAlt }}>
+                    <Plus color={colors.text} size={22} />
+                </Pressable>
             </View>
+            {saveError && <Text accessibilityRole="alert" variant="caption" className="px-4 mb-2" style={{ color: colors.danger }}>{saveError}</Text>}
+            <ScrollView contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 110 }}>
+                {rows.length ? rows.map((entry) => (
+                    <ScheduleItem key={entry.id} startTime={entry.startTime} endTime={entry.endTime}
+                        subject={entry.subject} teacher={entry.teacher} location={entry.location}
+                        accentColor={entry.isEmpty ? colors.border : darkMode ? colors.accent : entry.accentColor}
+                        isEmpty={entry.isEmpty} onMorePress={() => { if (!savingRef.current) setMenuEntry(entry); }}>
+                        {!entry.isEmpty && entry.sourceTurmaId !== selectionRef.current?.turmaId && (
+                            <Text variant="caption" style={{ color: colors.textMuted }}>DP · Turma {entry.sourceTurmaCode}</Text>
+                        )}
+                    </ScheduleItem>
+                )) : <Text className="text-center py-8" style={{ color: colors.textMuted }}>Nenhum horário disponível para este dia.</Text>}
+            </ScrollView>
 
-            <Animated.View
-                {...daySwipeResponder.panHandlers}
-                className="flex-1"
-                style={{ transform: [{ translateX }] }}
-            >
-                <Sortable
-                    data={visibleRows}
-                    itemHeight={SORTABLE_ITEM_HEIGHT}
-                    style={{ flex: 1, backgroundColor: colors.background }}
-                    contentContainerStyle={{ paddingHorizontal: 16 }}
-                    renderItem={({ item: row, id, ...sortableProps }) => (
-                        <SortableItem
-                            {...sortableProps}
-                            id={id}
-                            data={row}
-                            style={{ height: SORTABLE_ITEM_HEIGHT }}
-                            onDrop={(_, __, allPositions) =>
-                                reorderVisibleItems(allPositions)
-                            }
-                        >
-                            {renderScheduleRow(row)}
-                        </SortableItem>
-                    )}
-                />
-            </Animated.View>
-
-            <View className="flex-row items-center justify-between px-6 py-4">
-                <Button
-                    variant="ghost"
-                    size="xs"
-                    className="w-10 h-10 rounded-full"
-                    style={{ backgroundColor: colors.surfaceAlt }}
-                >
-                    <ChevronLeft size={24} color={colors.textMuted} />
-                </Button>
-                <View className="flex-row gap-1.5">
-                    <View
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: colors.accent }}
-                    />
-                    <View
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: colors.border }}
-                    />
-                    <View
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: colors.border }}
-                    />
-                    <View
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: colors.border }}
-                    />
-                    <View
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: colors.border }}
-                    />
-                    <View
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: colors.border }}
-                    />
-                    <View
-                        className="w-2 h-2 rounded-full"
-                        style={{ backgroundColor: colors.border }}
-                    />
+            <Modal visible={menuEntry !== null || editorOpen} transparent animationType="slide" onRequestClose={closeEditor}>
+                <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0,0,0,0.35)" }}>
+                    <Pressable accessibilityLabel="Fechar opções" style={{ flex: 1 }} onPress={closeEditor} disabled={saving} />
+                    <View style={{ maxHeight: "88%", borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20, paddingBottom: 32, backgroundColor: colors.surface }}>
+                        <View className="flex-row items-center justify-between mb-4">
+                            <Text variant="subheading">{menuEntry ? "Opções da aula" : conflicts.length ? "Conflito de horário" : "Adicionar aula ofertada"}</Text>
+                            <Pressable accessibilityRole="button" accessibilityLabel="Fechar" disabled={saving} onPress={closeEditor} style={{ padding: 8 }}><X color={colors.text} size={22} /></Pressable>
+                        </View>
+                        {saveError && <Text accessibilityRole="alert" variant="caption" className="mb-3" style={{ color: colors.danger }}>{saveError}</Text>}
+                        {menuEntry ? (
+                            <View style={{ gap: 12 }}>
+                                <Text variant="caption" style={{ color: colors.textMuted }}>{DAY_NAMES[menuEntry.day]} · {menuEntry.startTime}–{menuEntry.endTime}</Text>
+                                {menuEntry.isEmpty && <Button variant="outline" disabled={saving} onPress={() => openEditor(menuEntry)}>Escolher aula neste horário</Button>}
+                                {!menuEntry.isEmpty && <Button variant="destructive" loading={saving} onPress={() => void removeLesson(menuEntry)}>Excluir</Button>}
+                                <Button variant="ghost" disabled={saving} onPress={closeEditor}>Cancelar</Button>
+                            </View>
+                        ) : conflicts.length ? (
+                            <View style={{ gap: 16 }}>
+                                <Text>O horário da turma de origem está ocupado na sua grade. Você pode liberar as aulas abaixo e adicionar esta matéria nos horários originais.</Text>
+                                <ScrollView style={{ maxHeight: 160 }}>
+                                    {conflicts.map((entry) => <Text key={entry.id} variant="caption" className="mb-2">{entry.subject} · {DAY_NAMES[entry.day]} · {entry.startTime}–{entry.endTime}</Text>)}
+                                </ScrollView>
+                                <Button loading={saving} onPress={() => void saveOffering(true)}>Liberar aulas e adicionar</Button>
+                                <Button variant="outline" disabled={saving} onPress={() => setConflicts([])}>Voltar às ofertas</Button>
+                                <Button variant="ghost" disabled={saving} onPress={closeEditor}>Cancelar</Button>
+                            </View>
+                        ) : (
+                            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingBottom: 8 }}>
+                                <Text variant="caption" className="mb-3" style={{ color: colors.textMuted }}>
+                                    Escolha uma matéria já oferecida por uma turma do seu curso. Todos os encontros serão incluídos nos horários originais, com professor e sala definidos.
+                                </Text>
+                                {targetEntry && <Text variant="caption" className="mb-3">Ofertas em {DAY_NAMES[targetEntry.day]} · {targetEntry.startTime}–{targetEntry.endTime}</Text>}
+                                <SearchBar value={search} onChangeText={setSearch} placeholder="Buscar matéria ofertada" />
+                                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8, paddingBottom: 12 }}>
+                                    {[null, ...periods].map((value) => <Pressable key={value ?? "all"} accessibilityRole="button" disabled={saving}
+                                        onPress={() => { setPeriod(value); setOfferingKey(null); }}
+                                        style={{ padding: 10, borderRadius: 8, backgroundColor: period === value ? colors.accent : colors.surfaceAlt }}>
+                                        <Text variant="caption" style={{ color: period === value ? colors.background : colors.text }}>{value === null ? "Todos os períodos" : `${value}º período`}</Text>
+                                    </Pressable>)}
+                                </ScrollView>
+                                {filteredOfferings.map((offering) => {
+                                    const occupied = offeringConflicts(schedule, offering).length > 0;
+                                    return <Pressable key={offering.key} accessibilityRole="button"
+                                        accessibilityLabel={`${offering.subject}, ${periodLabel(offering)}, turma ${offering.turmaCodigo}`}
+                                        accessibilityState={{ selected: offeringKey === offering.key }} disabled={saving}
+                                        onPress={() => setOfferingKey(offering.key)}
+                                        style={{
+                                            padding: 14, marginBottom: 12, borderRadius: 8, borderWidth: offeringKey === offering.key ? 2 : 1,
+                                            borderColor: offeringKey === offering.key ? colors.accent : colors.border, backgroundColor: colors.surface
+                                        }}>
+                                        <Text variant="label">{offering.subject}</Text>
+                                        <Text variant="caption" className="mt-1" style={{ color: colors.textMuted }}>{periodLabel(offering)} · Turma {offering.turmaCodigo} · {offering.ano}</Text>
+                                        {offering.entries.map((entry) => <View key={entry.id} style={{ marginTop: 10 }}>
+                                            <Text variant="caption" style={{ color: colors.accent }}>{DAY_NAMES[entry.day]} · {entry.startTime}–{entry.endTime}</Text>
+                                            <Text variant="caption">{entry.teacher} · Sala: {entry.location}</Text>
+                                        </View>)}
+                                        <Text variant="caption" className="mt-2" style={{ color: occupied ? colors.danger : colors.textMuted }}>
+                                            {occupied ? "Conflita com sua grade" : "Horários livres na sua grade"}
+                                        </Text>
+                                    </Pressable>;
+                                })}
+                                {!filteredOfferings.length && <Text variant="caption" className="py-4" style={{ color: colors.textMuted }}>
+                                    {targetEntry ? "Nenhuma oferta adicional neste horário. Use o botão + para consultar os outros horários." : "Nenhuma oferta adicional para os filtros selecionados. As aulas que já estão na sua grade ficam ocultas."}
+                                </Text>}
+                                <Button loading={saving} disabled={!selectedOffering} onPress={() => void saveOffering()}>
+                                    Adicionar à minha grade
+                                </Button>
+                            </ScrollView>
+                        )}
+                    </View>
                 </View>
-                <Button
-                    variant="ghost"
-                    size="xs"
-                    className="w-10 h-10 rounded-full"
-                    style={{ backgroundColor: colors.surfaceAlt }}
-                >
-                    <ChevronRight size={24} color={colors.textMuted} />
-                </Button>
-            </View>
-
-            <Modal
-                visible={menuItemIndex !== null && !isSelectedItemInterval}
-                transparent
-                animationType="fade"
-                onRequestClose={() => setMenuItemIndex(null)}
-            >
-                <Pressable
-                    className="flex-1 justify-end bg-black/30"
-                    onPress={() => setMenuItemIndex(null)}
-                >
-                    <Pressable
-                        className="rounded-t-3xl px-5 pt-3 pb-8"
-                        style={{ backgroundColor: colors.surface }}
-                        onPress={() => {}}
-                    >
-                        <View
-                            className="self-center w-10 h-1 rounded-full mb-5"
-                            style={{ backgroundColor: colors.border }}
-                        />
-                        <Text variant="subheading" className="mb-2">
-                            Opções da aula
-                        </Text>
-                        <Pressable
-                            className="py-4 border-b"
-                            style={{ borderColor: colors.border }}
-                            onPress={openEditSheet}
-                        >
-                            <Text variant="body">Editar</Text>
-                        </Pressable>
-                        <Pressable
-                            className="py-4"
-                            onPress={
-                                isSelectedItemEmpty
-                                    ? openEditSheet
-                                    : deleteScheduleItem
-                            }
-                        >
-                            <Text
-                                variant="body"
-                                style={{
-                                    color: isSelectedItemEmpty
-                                        ? colors.accent
-                                        : colors.danger,
-                                }}
-                            >
-                                {isSelectedItemEmpty
-                                    ? "Adicionar aula"
-                                    : "Excluir"}
-                            </Text>
-                        </Pressable>
-                    </Pressable>
-                </Pressable>
-            </Modal>
-
-            <Modal
-                visible={isAddSheetOpen}
-                transparent
-                animationType="slide"
-                onRequestClose={() => setIsAddSheetOpen(false)}
-            >
-                <Pressable
-                    className="flex-1 justify-end bg-black/30"
-                    onPress={() => setIsAddSheetOpen(false)}
-                >
-                    <Pressable
-                        className="rounded-t-3xl px-3 pt-4 pb-8"
-                        style={{ backgroundColor: colors.surface }}
-                        onPress={() => {}}
-                    >
-                        <View className="flex-row items-center justify-between mb-5">
-                            <View className="w-10" />
-                            <Text variant="subheading">
-                                {editingItemIndex === null
-                                    ? "Adicionar Matéria"
-                                    : "Editar Matéria"}
-                            </Text>
-                            <Pressable
-                                className="w-10 h-10 items-center justify-center rounded-full"
-                                style={{ backgroundColor: colors.surfaceAlt }}
-                                onPress={() => setIsAddSheetOpen(false)}
-                                accessibilityLabel="Fechar"
-                            >
-                                <X size={22} color={colors.text} />
-                            </Pressable>
-                        </View>
-
-                        <Text variant="caption" className="mb-1">
-                            selecione uma matéria
-                        </Text>
-                        <View className="relative z-10">
-                            <Pressable
-                                className="h-11 border rounded-lg px-3 flex-row items-center justify-between"
-                                style={{
-                                    backgroundColor: colors.surface,
-                                    borderColor: colors.border,
-                                }}
-                                onPress={() =>
-                                    setIsSubjectPickerOpen((open) => !open)
-                                }
-                            >
-                                <Text variant="caption">{selectedSubject}</Text>
-                                <ChevronDown size={22} color={colors.text} />
-                            </Pressable>
-                            {isSubjectPickerOpen && (
-                                <View
-                                    className="absolute top-12 left-0 right-0 border rounded-lg shadow-lg"
-                                    style={{
-                                        backgroundColor: colors.surface,
-                                        borderColor: colors.border,
-                                    }}
-                                >
-                                    {SUBJECTS.map((subject) => (
-                                        <Pressable
-                                            key={subject}
-                                            className="px-3 py-3 border-b"
-                                            style={{
-                                                borderColor: colors.border,
-                                            }}
-                                            onPress={() => {
-                                                setSelectedSubject(subject);
-                                                setIsSubjectPickerOpen(false);
-                                            }}
-                                        >
-                                            <Text variant="caption">
-                                                {subject}
-                                            </Text>
-                                        </Pressable>
-                                    ))}
-                                </View>
-                            )}
-                        </View>
-
-                        <Text variant="caption" className="mt-5 mb-1">
-                            selecione um dia
-                        </Text>
-                        <View className="flex-row gap-1">
-                            {DAYS.map((day, index) => (
-                                <Pressable
-                                    key={index}
-                                    onPress={() => setSelectedDay(index)}
-                                    className="flex-1 h-11 rounded-lg border items-center justify-center"
-                                    style={{
-                                        backgroundColor:
-                                            selectedDay === index
-                                                ? colors.accent
-                                                : colors.surface,
-                                        borderColor:
-                                            selectedDay === index
-                                                ? colors.accent
-                                                : colors.border,
-                                    }}
-                                >
-                                    <Text
-                                        variant="caption"
-                                        className={
-                                            selectedDay === index
-                                                ? "font-medium"
-                                                : ""
-                                        }
-                                        style={{
-                                            color:
-                                                selectedDay === index
-                                                    ? colors.background
-                                                    : colors.textMuted,
-                                        }}
-                                    >
-                                        {day}
-                                    </Text>
-                                </Pressable>
-                            ))}
-                        </View>
-
-                        <Text variant="caption" className="mt-5 mb-1">
-                            selecione uma aula
-                        </Text>
-                        <View className="flex-row gap-1">
-                            {LESSONS.map((lesson) => (
-                                <Pressable
-                                    key={lesson}
-                                    onPress={() => setSelectedLesson(lesson)}
-                                    className="flex-1 h-11 rounded-lg border items-center justify-center"
-                                    style={{
-                                        backgroundColor:
-                                            selectedLesson === lesson
-                                                ? colors.accent
-                                                : colors.surface,
-                                        borderColor:
-                                            selectedLesson === lesson
-                                                ? colors.accent
-                                                : colors.border,
-                                    }}
-                                >
-                                    <Text
-                                        variant="caption"
-                                        className={
-                                            selectedLesson === lesson
-                                                ? "font-medium"
-                                                : ""
-                                        }
-                                        style={{
-                                            color:
-                                                selectedLesson === lesson
-                                                    ? colors.background
-                                                    : colors.textMuted,
-                                        }}
-                                    >
-                                        {lesson}
-                                    </Text>
-                                </Pressable>
-                            ))}
-                        </View>
-
-                        <Pressable
-                            className="mt-5 h-13 rounded-lg flex-row items-center justify-center gap-2"
-                            style={{ backgroundColor: colors.accent }}
-                            onPress={saveScheduleItem}
-                        >
-                            <Plus size={24} color={colors.background} />
-                            <Text
-                                className="font-[Poppins-Regular]"
-                                style={{ color: colors.background }}
-                            >
-                                {editingItemIndex === null
-                                    ? "Adicionar"
-                                    : "Salvar"}
-                            </Text>
-                        </Pressable>
-                    </Pressable>
-                </Pressable>
             </Modal>
         </View>
     );
