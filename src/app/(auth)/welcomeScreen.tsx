@@ -1,11 +1,22 @@
 import { router } from "expo-router";
-import { Image, StyleSheet, View } from "react-native";
+import { Alert, Image, StyleSheet, View } from "react-native";
 import { Button, Text } from "../../components";
 
+import { saveUserProfile, type UserProfile } from "../../services/userProfile";
 import { useAppTheme } from "../../theme/ThemeContext";
 
 export default function Index() {
   const { colors } = useAppTheme();
+
+  async function escolherPerfil(profile: UserProfile) {
+    try {
+      await saveUserProfile(profile);
+      router.push({ pathname: "/login", params: { perfil: profile } });
+    } catch (error) {
+      console.error("Erro ao salvar perfil do usuário:", error);
+      Alert.alert("Não foi possível continuar", "Tente novamente.");
+    }
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}> 
@@ -35,7 +46,7 @@ export default function Index() {
           <Button
             variant="primary"
             size="lg"
-            onPress={() => router.push("/login")}
+            onPress={() => escolherPerfil("aluno")}
           >
             Sou Aluno
           </Button>
@@ -43,7 +54,7 @@ export default function Index() {
           <Button
             variant="secondary"
             size="lg"
-            onPress={() => router.push("/login")}
+            onPress={() => escolherPerfil("professor")}
           >
             Sou Professor
           </Button>
