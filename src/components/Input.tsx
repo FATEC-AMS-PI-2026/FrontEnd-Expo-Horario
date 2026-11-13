@@ -34,7 +34,7 @@ export function Input({
       <View
         style={{
             backgroundColor: darkMode ? colors.backgroundAlt : colors.background,
-          borderColor: focused ? colors.accent : colors.border,
+          borderColor: error ? colors.danger : focused ? colors.accent : colors.border,
           borderWidth: 1,
           borderRadius: 12,
         }}
