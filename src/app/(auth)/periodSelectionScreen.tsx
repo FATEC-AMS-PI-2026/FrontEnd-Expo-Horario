@@ -7,6 +7,16 @@ import { LucideChevronLeft } from "lucide-react-native";
 import { Button, Text } from "../../components";
 import { API_URL } from "../../services/api";
 import { useAppTheme } from "../../theme/ThemeContext";
+import { LucideChevronLeft } from "lucide-react-native";
+
+interface Turma {
+    id: number;
+    codigo: string;
+    periodo: number;
+    ano: number;
+    curso: { id: number; nome: string; periodicidade: string };
+}
+interface Pagina<T> { content: T[]; totalPages: number }
 
 interface Curso {
     id: number;

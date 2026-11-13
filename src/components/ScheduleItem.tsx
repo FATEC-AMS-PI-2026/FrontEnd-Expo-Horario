@@ -115,6 +115,8 @@ export function ScheduleItem({
           {location}
         </Text>
         {!hideMore && <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Opções de ${isEmpty ? "aula vazia" : subject}, ${startTime}`}
           onPress={onMorePress}
           style={{ padding: 4 }}
         >

@@ -7,6 +7,7 @@ import {
   FlatList,
   ListRenderItem,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -174,14 +175,14 @@ export default function ChooseCourse() {
   }) => <CourseCard item={item} />;
 
   return (
-    <SafeAreaView
+    <ScrollView
       style={[
         styles.safeArea,
         { backgroundColor: colors.background },
       ]}
     >
       <View>
-        <View className="mx-5">
+        <View className="mt-5 mx-5">
           <Button
             className="btn w-26 justify-center align-center"
             variant="secondary"
@@ -190,7 +191,7 @@ export default function ChooseCourse() {
           >
             <View className="flex-row gap-1 items-center">
               <LucideChevronLeft size={24} color={colors.text} />
-              <Text className="m-0" style={{ color: colors.text }}>
+              <Text style={{ color: colors.text }} className="m-0">
                 Voltar
               </Text>
             </View>
@@ -261,7 +262,7 @@ export default function ChooseCourse() {
           </Text>
         ) : (
           <FlatList
-          className="mx-5"
+            className="mx-5"
             data={filteredCourses}
             keyExtractor={(item) =>
               item.id.toString()
@@ -274,7 +275,7 @@ export default function ChooseCourse() {
           />
         )}
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 
