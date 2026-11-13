@@ -49,6 +49,8 @@
     "@types/react": "~19.2.2",
     "@vitest/browser-playwright": "latest",
     "@vitest/coverage-v8": "latest",
+    "eslint": "^9.0.0",
+    "eslint-config-expo": "~57.0.2",
     "playwright": "latest",
     "typescript": "~6.0.3",
     "vite": "latest",

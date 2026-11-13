@@ -1,6 +1,7 @@
 import { useRouter } from "expo-router";
 import { LucideChevronLeft, LucideEye } from "lucide-react-native";
 import { Pressable, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Input, Text } from "../../components";
 import { useAppTheme } from "../../theme/ThemeContext";
@@ -10,22 +11,30 @@ export default function Login() {
   const { colors } = useAppTheme();
 
   return (
-    <View className="flex-1 items-center" style={{ backgroundColor: colors.background }}>
-      <View className="w-full max-w-[400px]">
-        <View className="mt-5 mx-5">
-          <Button
-            className="btn w-26 justify-center align-center"
-            variant="secondary"
-            size="sm"
-            onPress={() => router.back()}
-          >
-            <View className="flex-row gap-1 items-center">
-              <LucideChevronLeft size={24} />
-              <Text className="text-primary m-0">Voltar</Text>
-            </View>
-          </Button>
-        </View>
+    <SafeAreaView
+      style={{ backgroundColor: colors.background, flex: 1 }}
+    >
+      <View
+        className="flex-1 items-center"
+        style={{ backgroundColor: colors.background }}
+      >
+          <View className="mt-5 mx-5 self-start">
+            <Button
+              className="btn w-26 justify-center align-center"
+              variant="secondary"
+              size="sm"
+              onPress={() => router.back()}
+            >
+              <View className="flex-row gap-1 items-center">
+                <LucideChevronLeft size={24} color={colors.text} />
+                <Text style={{ color: colors.text }} className="m-0">
+                  Voltar
+                </Text>
+              </View>
+            </Button>
+          </View>
 
+        <View className="w-full max-w-[400px]">
         <Text variant="heading" className="text-center mt-5">Login</Text>
 
         <Text variant="caption" className="text-center mt-2 mb-10">
@@ -77,7 +86,8 @@ export default function Login() {
         >
           Não tem uma conta? Crie uma
         </Button>
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

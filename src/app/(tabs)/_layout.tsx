@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
 
   tabBarLabel: {
-    fontSize: 10,
+    fontSize: 12,
     fontWeight: "500",
   },
 });

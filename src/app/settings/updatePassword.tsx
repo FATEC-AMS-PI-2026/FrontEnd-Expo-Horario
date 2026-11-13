@@ -57,16 +57,16 @@ export default function UpdatePassword() {
     >
       <View className="flex-1 px-5 py-5 gap-3">
         <Button
-          variant="secondary"
-          size="sm"
-          className="w-fit"
-          onPress={() => router.back()}
-        >
-          <View className="flex-row items-center gap-1">
-            <LucideChevronLeft size={16} />
-            <Text className="text-primary">Voltar</Text>
-          </View>
-        </Button>
+            className="btn w-26 justify-center align-center"
+            variant="secondary"
+            size="sm"
+            onPress={() => router.back()}
+          >
+            <View className="flex-row gap-1 items-center">
+              <LucideChevronLeft size={24} color={colors.text} />
+              <Text className="text-primary m-0">Voltar</Text>
+            </View>
+          </Button>
 
         <Text
           variant="heading"

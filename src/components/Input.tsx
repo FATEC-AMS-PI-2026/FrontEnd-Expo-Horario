@@ -38,7 +38,7 @@ export function Input({
           borderWidth: 1,
           borderRadius: 12,
         }}
-        className="flex-row transition items-center outline-none"
+        className="flex-row items-center outline-none"
       >
         {leftIcon && <View className="pl-3">{leftIcon}</View>}
         <TextInput

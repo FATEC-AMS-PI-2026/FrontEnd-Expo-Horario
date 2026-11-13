@@ -8,3 +8,4 @@ export { ScheduleItem } from "./ScheduleItem";
 export { BottomMenu } from "./BottomMenu";
 export { Tabs, TabPanel } from "./Tabs";
 export { Accordion, AccordionItem } from "./Accordion";
+export { SearchBar } from "./SearchBar";
