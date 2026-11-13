@@ -1,15 +1,20 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { LucideChevronLeft } from 'lucide-react-native';
 import { useState, } from 'react';
 import {
+  Alert,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Input, Text } from '../../components';
+import { isUserProfile, saveUserProfile, type UserProfile } from '../../services/userProfile';
 import { useAppTheme } from '../../theme/ThemeContext';
 
 export default function CadastroScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ perfil?: string | string[] }>();
+  const profileParam = Array.isArray(params.perfil) ? params.perfil[0] : params.perfil;
+  const profile: UserProfile = isUserProfile(profileParam) ? profileParam : 'aluno';
   const { colors } = useAppTheme();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -18,7 +23,7 @@ export default function CadastroScreen() {
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
 
-  const handleCadastro = () => {
+  const handleCadastro = async () => {
     if (!email || !senha || !confirmarSenha) {
       return;
     }
@@ -27,12 +32,17 @@ export default function CadastroScreen() {
       return;
     }
 
-    console.log({
-      email,
-      senha,
-    });
-
-    router.push('/chooseCourse');
+    try {
+      await saveUserProfile(profile);
+      if (profile === 'professor') {
+        router.replace('/home');
+      } else {
+        router.push('/chooseCourse');
+      }
+    } catch (error) {
+      console.error('Erro ao salvar perfil do usuário:', error);
+      Alert.alert('Não foi possível criar a conta', 'Tente novamente.');
+    }
   };
 
   return (
@@ -61,7 +71,9 @@ export default function CadastroScreen() {
         <View className="w-full max-w-[400px]">
 
 
-        <Text variant="heading" className="text-center mt-5">Criar Conta</Text>
+        <Text variant="heading" className="text-center mt-5">
+          Cadastro do {profile === 'professor' ? 'Professor' : 'Aluno'}
+        </Text>
 
         <Text variant="caption" className="text-center mt-2 mb-10">
           Insira seus dados pra criar conta
@@ -104,7 +116,7 @@ export default function CadastroScreen() {
         <Button
           className="mx-5 mt-2"
           variant="secondary"
-          onPress={() => router.push('/login')}
+          onPress={() => router.push({ pathname: '/login', params: { perfil: profile } })}
         >
           Já tem conta? Entre
         </Button>

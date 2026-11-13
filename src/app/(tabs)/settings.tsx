@@ -3,10 +3,11 @@ import { Card } from "@/components/Card";
 import { Text } from "@/components/Text";
 import { Link, useRouter, type Href } from "expo-router";
 import { BugIcon, ChevronRight, ExternalLink, KeyIcon, LogOut, Moon } from "lucide-react-native";
-import { Pressable, View } from "react-native";
+import { Alert, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { useAppTheme } from "../../theme/ThemeContext";
+import { clearUserProfile } from "../../services/userProfile";
 
 export default function Settings() {
   const { colors, darkMode, setDarkMode } = useAppTheme();
@@ -18,6 +19,16 @@ export default function Settings() {
     if (index === total - 1) return "bottom";
     return "middle";
   };
+
+  async function sair() {
+    try {
+      await clearUserProfile();
+      router.replace("/welcomeScreen");
+    } catch (error) {
+      console.error("Erro ao encerrar sessão:", error);
+      Alert.alert("Não foi possível sair", "Tente novamente.");
+    }
+  }
 
   const generalSettings = [
     { icon: <KeyIcon color={colors.text} />, label: "Alterar Senha", action: <ChevronRight color={colors.textMuted} /> },
@@ -128,7 +139,7 @@ export default function Settings() {
             <Pressable
               accessibilityRole="button"
               accessibilityLabel="Sair e voltar para a tela inicial"
-              onPress={() => router.replace("/welcomeScreen")}
+              onPress={sair}
             >
               <Card
                 className="settingsFrame flex flex-row justify-between py-3"

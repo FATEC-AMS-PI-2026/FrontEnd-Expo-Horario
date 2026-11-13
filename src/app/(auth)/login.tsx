@@ -1,14 +1,32 @@
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { LucideChevronLeft, LucideEye } from "lucide-react-native";
-import { Pressable, View } from "react-native";
+import { Alert, Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Button, Input, Text } from "../../components";
+import { isUserProfile, saveUserProfile, type UserProfile } from "../../services/userProfile";
 import { useAppTheme } from "../../theme/ThemeContext";
 
 export default function Login() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ perfil?: string | string[] }>();
+  const profileParam = Array.isArray(params.perfil) ? params.perfil[0] : params.perfil;
+  const profile: UserProfile = isUserProfile(profileParam) ? profileParam : "aluno";
   const { colors } = useAppTheme();
+
+  async function handleLogin() {
+    try {
+      await saveUserProfile(profile);
+      if (profile === "professor") {
+        router.replace("/home");
+      } else {
+        router.push("/chooseCourse");
+      }
+    } catch (error) {
+      console.error("Erro ao salvar perfil do usuário:", error);
+      Alert.alert("Não foi possível entrar", "Tente novamente.");
+    }
+  }
 
   return (
     <SafeAreaView
@@ -34,8 +52,9 @@ export default function Login() {
             </Button>
           </View>
 
-        <View className="w-full max-w-[400px]">
-        <Text variant="heading" className="text-center mt-5">Login</Text>
+        <Text variant="heading" className="text-center mt-5">
+          Login do {profile === "professor" ? "Professor" : "Aluno"}
+        </Text>
 
         <Text variant="caption" className="text-center mt-2 mb-10">
           Insira seus dados para entrar
@@ -74,7 +93,7 @@ export default function Login() {
         <Button
           className="mx-5 mt-4"
           variant="primary"
-          onPress={() => router.push("/chooseCourse")}
+          onPress={handleLogin}
         >
           Entrar
         </Button>
@@ -82,7 +101,7 @@ export default function Login() {
         <Button
           className="mx-5 mt-2"
           variant="secondary"
-          onPress={() => router.push("/cadastro")}
+          onPress={() => router.push({ pathname: "/cadastro", params: { perfil: profile } })}
         >
           Não tem uma conta? Crie uma
         </Button>
