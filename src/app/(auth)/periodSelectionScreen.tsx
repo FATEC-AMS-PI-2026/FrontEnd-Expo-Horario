@@ -7,7 +7,6 @@ import { LucideChevronLeft } from "lucide-react-native";
 import { Button, Text } from "../../components";
 import { API_URL } from "../../services/api";
 import { useAppTheme } from "../../theme/ThemeContext";
-import { LucideChevronLeft } from "lucide-react-native";
 
 interface Turma {
     id: number;

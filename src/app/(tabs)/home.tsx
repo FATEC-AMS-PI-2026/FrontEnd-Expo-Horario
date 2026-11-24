@@ -10,7 +10,7 @@ import {
   Sparkles,
   Users,
 } from "lucide-react-native";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ScrollView,
   TouchableOpacity,
@@ -27,6 +27,17 @@ import {
   Text,
 } from "../../components";
 import { useAppTheme } from "../../theme/ThemeContext";
+import YearTransitionModal from "../../components/modals/YearTransitionModal";
+
+import {
+  verificarTransicaoAcademica,
+  confirmarTransicaoAcademica,
+  registrarRecusaTransicao,
+  type AcademicSelection,
+  type Turma,
+} from "../../services/yearTransition";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface DayOption {
   id: number;
@@ -48,6 +59,100 @@ export default function Home() {
   const { colors, darkMode } = useAppTheme();
   const router = useRouter();
   const [selectedDay, setSelectedDay] = useState<number>(1);
+  const [transitionVisible, setTransitionVisible] = useState(false);
+  const [currentSelection, setCurrentSelection] = useState<AcademicSelection | null>(null);
+  const [nextTurma, setNextTurma] = useState<Turma | null>(null);
+
+useEffect(() => {
+  const controller = new AbortController();
+
+  async function verificarTransicao() {
+    try {
+      const resultado = await verificarTransicaoAcademica(controller.signal);
+
+      if (controller.signal.aborted) return;
+
+      if (resultado.shouldShow && resultado.current && resultado.nextTurma) {
+        setCurrentSelection(resultado.current);
+        setNextTurma(resultado.nextTurma);
+        setTransitionVisible(true);
+      }
+    } catch (error) {
+      console.error("Erro ao verificar transição acadêmica:", error);
+    }
+  }
+
+  verificarTransicao();
+
+  return () => controller.abort();
+}, []);
+
+async function handleConfirmTransition() {
+  if (!currentSelection || !nextTurma) return;
+
+  try {
+    await confirmarTransicaoAcademica(currentSelection, nextTurma);
+
+    setCurrentSelection({
+      ...currentSelection,
+      turmaId: nextTurma.id,
+      turmaCodigo: nextTurma.codigo,
+      periodo: nextTurma.periodo,
+      ano: nextTurma.ano,
+    });
+
+    setTransitionVisible(false);
+  } catch (error) {
+    console.error("Erro ao atualizar seleção acadêmica:", error);
+  }
+}
+
+async function handleDismissTransition() {
+  try {
+    await registrarRecusaTransicao();
+    setTransitionVisible(false);
+  } catch (error) {
+    console.error("Erro ao registrar recusa:", error);
+  }
+}
+
+async function handleTestTransition() {
+  // Simula a seleção academica anterior ao ano atual
+  const turmaAtual: AcademicSelection = {
+    cursoId: 1,
+    cursoNome: "Análise e Desenvolvimento de Sistemas",
+    periodicidade: "semestral",
+    turmaId: 100,
+    turmaCodigo: "ADS-1A",
+    periodo: 1,
+    ano: 2025,
+  };
+
+  // prox turnma disponivel
+  const proximaTurma: Turma = {
+    id: 101,
+    codigo: "ADS-2A",
+    periodo: 2,
+    ano: 2026,
+    curso: { id: 1 },
+  };
+
+  try {
+    // Salvar dados e remover recusa anterior
+    await AsyncStorage.setItem(
+      "gini:selecaoAcademica",
+      JSON.stringify(turmaAtual)
+    );
+
+    await AsyncStorage.removeItem("gini:yearTransitionDismissed");
+
+    setCurrentSelection(turmaAtual);
+    setNextTurma(proximaTurma);
+    setTransitionVisible(true);
+  } catch (error) {
+    console.error("Erro ao preparar teste de transição:", error);
+  }
+}
 
   // Paleta com contraste WCAG 2.1 AA garantido para fundo escuro (#1f2937 / #0f172a) e claro
   const disciplineAccents = useMemo(() => {
@@ -511,7 +616,36 @@ export default function Home() {
             </Text>
           </View>
         </View>
+        {/* botao temporario pra teste da troca de ano, pode tirar dps*/}
+        <TouchableOpacity
+          onPress={handleTestTransition}
+          className="mt-3 p-4 rounded-xl items-center"
+          style={{
+            backgroundColor: darkMode ? "#164e63" : "#e0f2fe",
+            borderWidth: 1,
+            borderColor: darkMode ? "#0891b2" : "#7dd3fc",
+          }}
+        >
+          <Text
+            style={{
+              color: darkMode ? "#bae6fd" : "#0369a1",
+              fontWeight: "600",
+            }}
+          >
+            Trocar de período
+          </Text>
+        </TouchableOpacity>
       </ScrollView>
+
+      {currentSelection && nextTurma && (
+        <YearTransitionModal
+          visible={transitionVisible}
+          current={currentSelection}
+          nextTurma={nextTurma}
+          onConfirm={handleConfirmTransition}
+          onDismiss={handleDismissTransition}
+        />
+      )}
     </SafeAreaView>
   );
 }
