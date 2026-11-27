@@ -105,7 +105,6 @@ export default function Login() {
         >
           Não tem uma conta? Crie uma
         </Button>
-        </View>
       </View>
     </SafeAreaView>
   );
